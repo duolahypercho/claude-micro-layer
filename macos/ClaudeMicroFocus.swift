@@ -165,18 +165,53 @@ private func pressElement(_ element: AXUIElement) -> Bool {
 private func pressControl(
     in application: NSRunningApplication,
     labels: [String],
-    preferLast: Bool = false
+    preferLast: Bool = false,
+    exactOnly: Bool = false
 ) -> Bool {
     let wanted = labels.map(normalized)
     let matches = allElements(application).filter { element in
         guard isPressable(element), isEnabled(element) else { return false }
         let label = normalized(elementLabel(element))
-        return wanted.contains(label) || wanted.contains { label.hasPrefix("\($0) ") }
+        if wanted.contains(label) { return true }
+        // Prefix matching finds labels like "Approve running npm test", but it
+        // would also match unrelated controls such as "Send feedback", so the
+        // caller can require an exact label.
+        return exactOnly ? false : wanted.contains { label.hasPrefix("\($0) ") }
     }
     guard let target = preferLast ? matches.last : matches.first else {
         return false
     }
     return pressElement(target)
+}
+
+private func composerTextArea(in application: NSRunningApplication) -> AXUIElement? {
+    allElements(application).first { element in
+        guard
+            stringAttribute(element, kAXRoleAttribute) == (kAXTextAreaRole as String),
+            isEnabled(element)
+        else { return false }
+        var settable = DarwinBoolean(false)
+        AXUIElementIsAttributeSettable(
+            element,
+            kAXFocusedAttribute as CFString,
+            &settable
+        )
+        return settable.boolValue
+    }
+}
+
+// Sending is a Return in the focused composer rather than a labelled button,
+// so focus the message field first; this also works with Claude in the
+// background, where a bare Return would go to the frontmost app instead.
+private func sendMessage(in application: NSRunningApplication) {
+    if let composer = composerTextArea(in: application) {
+        _ = AXUIElementSetAttributeValue(
+            composer,
+            kAXFocusedAttribute as CFString,
+            kCFBooleanTrue
+        )
+    }
+    sendKey(CGKeyCode(kVK_Return), to: application)
 }
 
 private func sendKey(
@@ -417,7 +452,7 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
         case .voice:
             activateVoiceControl(in: application)
         case .send:
-            _ = pressControl(in: application, labels: ["Send"])
+            sendMessage(in: application)
         }
     }
 }
