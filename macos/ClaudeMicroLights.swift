@@ -33,7 +33,7 @@ struct LightsConfig {
         enabled: false,
         pollIntervalMs: 2000,
         rpcTimeoutMs: 75000,
-        claudeLayerIndex: 1,
+        claudeLayerIndex: -1,
         colors: LightsColors(pass: 0x22C55E, active: 0xF59E0B, error: 0xEF4444)
     )
 }

@@ -209,12 +209,15 @@ approval, orange steady when idle, red blinking on error.
 
 The lights are sent over the keyboard's vendor RPC channel and are never
 written to the keymap, so the protected Codex Layer 1 configuration is
-untouched. The helper reads the active layer from the keyboard and only
-paints while Layer 2 is selected; it clears the lights when you run
+untouched. The firmware draws the per-key task lights only while **Layer 1**
+is selected — Layer 1 is the Claude status board. While Layer 1 is active,
+pressing a task key also selects that recent chat: the helper receives
+Layer 1's own key events and drives Claude in the background, so Claude
+never needs to come forward. The helper clears the lights when you run
 `lights off`, when Claude quits, or when the helper stops. Do not run the
-lights while the Codex app is actively driving the same task keys — the
-firmware has one shared set of six task lights and the two writers would
-overwrite each other.
+lights while the Codex app is actively driving the keyboard — the firmware
+has one shared set of six task lights and the two writers would overwrite
+each other.
 
 Colors and polling can be customized in
 `~/Library/Application Support/ClaudeMicroLayer/lights.json`
@@ -233,6 +236,14 @@ to wake it.
 The current release installs and syncs Layer 2, but it does not add a physical
 layer-switch gesture to the Codex-controlled Layer 1. Select Layer 2 in Work
 Louder Input when you want to use the Claude layout.
+
+Input can also switch layers automatically: in the Keymap tab, select Layer 2
+and link it to the Claude application. The keyboard then flips to Layer 2
+whenever Claude is focused and returns to Layer 1 (the status-light board)
+otherwise. The linked-layer state only applies while Claude is frontmost —
+that is how Input's app links work — but the Layer 2 controls still reach
+Claude in the background because they go through the helper. Reinstalling the
+layer pack preserves an existing app link.
 
 The white or blue LEDs are Bluetooth-channel indicators, not layer indicators.
 
@@ -276,6 +287,13 @@ the path reported by `detect` explicitly with `--keymap`.
 
 Use `detect`, identify the directory for the Codex Micro you want, and pass its
 full `keymap.json` path with `--keymap`.
+
+### Sync reports "Input reported that the keymap write failed"
+
+The keyboard's file layer is most reliable over USB. Plug the keyboard in
+with its USB-C cable and run `sync` again. If writes still fail, flip the
+keyboard's power switch off and on to reset it, reconnect USB, and retry;
+syncing over a sleepy Bluetooth link can wedge the transfer half way.
 
 ### Custom Input installation path
 

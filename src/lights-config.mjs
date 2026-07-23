@@ -13,7 +13,7 @@ export const DEFAULT_LIGHTS_CONFIG = Object.freeze({
   enabled: false,
   pollIntervalMs: 2000,
   rpcTimeoutMs: 75000,
-  claudeLayerIndex: 1,
+  claudeLayerIndex: -1,
   colors: Object.freeze({
     pass: "#22C55E",
     active: "#F59E0B",

@@ -31,7 +31,7 @@ test("missing configuration falls back to safe defaults", async () => {
 
   assert.equal(config.enabled, false);
   assert.equal(config.pollIntervalMs, 2000);
-  assert.equal(config.claudeLayerIndex, 1);
+  assert.equal(config.claudeLayerIndex, -1);
   assert.deepEqual(config.colors, {
     pass: "#22C55E",
     active: "#F59E0B",

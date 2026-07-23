@@ -138,16 +138,22 @@ node ./bin/claude-micro-layer.mjs lights on
 
 Status lights are volatile device state sent over the keyboard's vendor
 RPC channel; the keymap file and the protected Codex Layer 1 configuration
-are never written. The helper reads the active layer from the keyboard and
-only paints while Layer 2 is selected, clears the lights when lighting is
-disabled or the helper exits, and turns everything off when Claude is not
-running. The first time lights are enabled, macOS asks once for **Input
+are never written. The firmware renders the per-key task lights only while
+**Layer 1** is selected, so Layer 1 doubles as the ambient Claude status
+board: the helper also listens to Layer 1's own task-key events and selects
+the matching recent chat, with Claude in the background. Lights are cleared
+when lighting is disabled or the helper exits, and turned off when Claude is
+not running. The first time lights are enabled, macOS asks once for **Input
 Monitoring** access for `claude-micro-focus`.
 
-Because the firmware exposes one shared set of six task lights, avoid running
-Claude status lights while the Codex app is actively driving the same keys;
-the two would overwrite each other. Disable with
-`node ./bin/claude-micro-layer.mjs lights off`.
+Because the firmware exposes one shared set of six task lights and Layer 1
+key events, avoid running Claude status lights while the Codex app is
+actively driving the keyboard; the two would overwrite each other. Disable
+with `node ./bin/claude-micro-layer.mjs lights off`.
+
+A wired USB connection is strongly recommended: over Bluetooth the idle
+keyboard sleeps its link, so lights can lag by a minute or more and keymap
+syncs become unreliable. Over USB both are effectively instant.
 
 The Claude commands were checked against the installed Claude Desktop macOS
 application. General editing commands continue to work in other applications,
