@@ -3,122 +3,158 @@
   "formatVersion": 1,
   "device": "codex_micro",
   "name": "Claude Desktop",
-  "description": "Claude Desktop commands, prompt editing, and zoom controls for macOS.",
+  "description": "Claude Desktop recent tasks, task controls, voice input, and zoom controls for macOS.",
   "author": "duolahypercho",
   "actionGroupColor": "#D97757",
   "actions": [
     {
       "id": 0,
-      "name": "New Conversation",
+      "name": "Recent Task 1",
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_N", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_1", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 1,
-      "name": "Open File",
+      "name": "Recent Task 2",
       "color": null,
-      "icon": "icon-folder-open-fas",
+      "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_O", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_2", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 2,
-      "name": "Undo",
+      "name": "Recent Task 3",
       "color": null,
-      "icon": "icon-arrow-rotate-left-fas",
+      "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_Z", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_3", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 3,
-      "name": "Redo",
+      "name": "Recent Task 4",
       "color": null,
-      "icon": "icon-arrow-rotate-right-fas",
+      "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LSFT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_Z", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LSFT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_4", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 4,
-      "name": "Find",
+      "name": "Recent Task 5",
       "color": null,
-      "icon": "icon-magnifying-glass-fas",
+      "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_F", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_5", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 5,
-      "name": "Reload",
+      "name": "Recent Task 6",
       "color": null,
-      "icon": "icon-arrows-rotate-fas",
+      "icon": "icon-message-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_R", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_6", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 6,
-      "name": "Copy",
+      "name": "Toggle Fast Mode",
       "color": null,
-      "icon": "icon-copy-fas",
+      "icon": "icon-bolt-lightning-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_C", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_F", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 7,
-      "name": "Paste",
+      "name": "Confirm Current Request",
       "color": null,
-      "icon": "icon-paste-fas",
+      "icon": "icon-check-double-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_V", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_Y", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 8,
-      "name": "Paste and Match Style",
+      "name": "Cancel Current Request",
       "color": null,
-      "icon": "icon-paintbrush-fas",
+      "icon": "icon-xmark-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LSFT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_V", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LSFT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_X", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 9,
-      "name": "Select All",
+      "name": "Fork Current Task",
       "color": null,
-      "icon": "icon-check-double-fas",
+      "icon": "icon-arrows-turn-to-dots-fas",
       "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_A", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        { "keycode": "KC_K", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
@@ -156,29 +192,47 @@
     },
     {
       "id": 13,
-      "name": "Escape",
+      "name": "Voice Input Left",
       "color": null,
-      "icon": "icon-xmark-fas",
+      "icon": "icon-microphone-fas",
       "keyInputs": [
-        { "keycode": "KC_ESC", "delay": 0, "actionType": 2 }
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_V", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 14,
-      "name": "Tab",
+      "name": "Voice Input Right",
       "color": null,
-      "icon": "icon-arrow-right-long-fas",
+      "icon": "icon-microphone-fas",
       "keyInputs": [
-        { "keycode": "KC_TAB", "delay": 0, "actionType": 2 }
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_V", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
       "id": 15,
-      "name": "Enter",
+      "name": "Send Message",
       "color": null,
-      "icon": "icon-arrow-turn-down-fas",
+      "icon": "icon-paper-plane-fas",
       "keyInputs": [
-        { "keycode": "KC_ENTER", "delay": 0, "actionType": 2 }
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_ENTER", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
       ]
     },
     {
@@ -200,7 +254,7 @@
   "multiActions": [
     {
       "id": 0,
-      "name": "New Conversation / Focus Claude",
+      "name": "Recent Task 1 / Focus Claude",
       "color": null,
       "icon": "icon-message-fas",
       "tap": { "keycode": "KA_0", "delay": 0, "actionType": 1 },

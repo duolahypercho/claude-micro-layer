@@ -85,7 +85,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A15",
   ]);
   assert.equal(updated.macros.length, 17);
-  assert.equal(updated.macros[0].name, "New Conversation");
+  assert.equal(updated.macros[0].name, "Recent Task 1");
   assert.equal(updated.macros[0].icon, "icon-message-fas");
   assert.equal(
     updated.macros.every((macro) => macro.icon?.startsWith("icon-")),
@@ -93,11 +93,38 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_LGUI", "KC_N", "KC_LGUI"],
+    [
+      "KC_LCTL",
+      "KC_LALT",
+      "KC_LGUI",
+      "KC_1",
+      "KC_LGUI",
+      "KC_LALT",
+      "KC_LCTL",
+    ],
   );
   assert.deepEqual(
-    updated.macros.slice(13, 16).map((macro) => macro.actions[0].kc),
-    ["KC_ESC", "KC_TAB", "KC_ENTER"],
+    updated.macros.slice(0, 10).map((macro) => macro.name),
+    [
+      "Recent Task 1",
+      "Recent Task 2",
+      "Recent Task 3",
+      "Recent Task 4",
+      "Recent Task 5",
+      "Recent Task 6",
+      "Toggle Fast Mode",
+      "Confirm Current Request",
+      "Cancel Current Request",
+      "Fork Current Task",
+    ],
+  );
+  assert.deepEqual(
+    updated.macros.slice(13, 16).map((macro) => macro.name),
+    ["Voice Input Left", "Voice Input Right", "Send Message"],
+  );
+  assert.deepEqual(
+    updated.macros.slice(13, 16).map((macro) => macro.actions[3].kc),
+    ["KC_V", "KC_V", "KC_ENTER"],
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
@@ -217,12 +244,20 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal("id" in exported.layer, false);
   assert.deepEqual(exported.layer.layout.keymap[0], ["KM_0", "KA_1"]);
   assert.equal(exported.actions.length, 17);
-  assert.equal(exported.actions[0].name, "New Conversation");
+  assert.equal(exported.actions[0].name, "Recent Task 1");
   assert.equal(exported.actions[0].icon, "icon-message-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_LGUI", "KC_N", "KC_LGUI"],
+    [
+      "KC_LCTL",
+      "KC_LALT",
+      "KC_LGUI",
+      "KC_1",
+      "KC_LGUI",
+      "KC_LALT",
+      "KC_LCTL",
+    ],
   );
   assert.equal(exported.multiActions.length, 1);
   assert.equal(exported.multiActions[0].tap.keycode, "KA_0");

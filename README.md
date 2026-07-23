@@ -101,18 +101,28 @@ Every control has an icon from the SVG icon library bundled with Work Louder
 Input. Descriptive action names remain available in Input for tooltips and
 editing, while the keyboard preview uses the icons.
 
-| Control group       | Mapping                                        |
-| ------------------- | ---------------------------------------------- |
-| Top two keys        | New Conversation (`⌘N`), Open File (`⌘O`)      |
-| First four-key row  | Undo, Redo, Find, Reload                       |
-| Second four-key row | Copy, Paste, Paste and Match Style, Select All |
-| Bottom three keys   | Escape, Tab, Enter                             |
-| Dial                | Zoom out, zoom in, actual size                 |
+| Control group       | Mapping                          |
+| ------------------- | -------------------------------- |
+| First six keys      | Claude recent tasks 1–6          |
+| Second four-key row | Fast mode, Confirm, Cancel, Fork |
+| Bottom three keys   | Voice input, Voice input, Send   |
+| Dial                | Zoom out, zoom in, actual size   |
 
-The top-left key is a native Input multiaction. A single tap runs New
-Conversation; a double tap within 250 ms sends a private global shortcut to the
-included macOS helper, which brings Claude to the front or launches it. Claude
-continues working normally while it is in the background.
+The first six keys select the first six tasks shown in Claude's **Recents**
+list. The top-left key is a native Input multiaction: a single tap selects
+recent task 1; a double tap within 250 ms sends a private global shortcut to
+the included macOS helper, which brings Claude to the front or launches it.
+All single-tap task controls work while Claude remains in the background.
+
+The helper uses macOS Accessibility to press Claude's visible controls. The
+first task-control press may show a macOS permission prompt. Grant the installed
+`claude-micro-focus` helper access under **System Settings → Privacy & Security
+→ Accessibility**.
+
+Codex's live task colors cannot currently be reproduced safely on Layer 2. The
+firmware exposes one global set of six task-light states rather than independent
+states per layer, so a Claude lighting bridge would overwrite the protected
+Codex Layer 1 colors. Layer 2 therefore keeps its configured static lighting.
 
 The Claude commands were checked against the installed Claude Desktop macOS
 application. General editing commands continue to work in other applications,

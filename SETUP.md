@@ -64,9 +64,15 @@ node ./bin/claude-micro-layer.mjs focus-helper install
 
 This compiles a small native helper, installs it in your user Application
 Support directory, and starts it automatically at login. It listens only for
-`Control-Option-Command-C`. When that shortcut arrives, it brings the existing
-Claude window to the front or launches Claude if it is closed. It does not read
-keystrokes, conversation contents, or Claude data.
+the private `Control-Option-Command` shortcuts emitted by this Layer 2 pack.
+The helper selects recent Claude tasks and presses the requested Claude control
+without bringing Claude forward. The top-left double tap is the exception: it
+brings the existing Claude window to the front or launches Claude if closed.
+
+The helper uses macOS Accessibility to find Claude's visible controls. The
+first time you use a task key, macOS may ask for access. Open **System Settings
+→ Privacy & Security → Accessibility** and enable `claude-micro-focus`. It does
+not read keystrokes or conversation text.
 
 You can test the helper immediately by placing another app in front and pressing
 `Control-Option-Command-C` once.
@@ -156,31 +162,42 @@ is that the command reports a verified checksum and exits successfully.
 3. Select the circle labelled **2** under Layers.
 4. Confirm that the layer name is **Claude Desktop**.
 5. Confirm that SVG icons appear on all keys and dial controls. Hover over or
-   select an icon to see action names such as **New Conversation**, **Open
-   File**, **Undo**, and **Redo**.
+   select an icon to see action names such as **Recent Task 1**, **Toggle Fast
+   Mode**, **Confirm Current Request**, and **Voice Input**.
 
 ## 10. Test the Claude controls
 
-Bring Claude Desktop to the front, select Layer 2 in Input, and test one control
-at a time:
+Select Layer 2 in Input and test one control at a time. Claude can remain behind
+another app:
 
-| Control group       | Actions                                        |
-| ------------------- | ---------------------------------------------- |
-| Top two keys        | New Conversation, Open File                    |
-| First four-key row  | Undo, Redo, Find, Reload                       |
-| Second four-key row | Copy, Paste, Paste and Match Style, Select All |
-| Bottom three keys   | Escape, Tab, Enter                             |
-| Dial                | Zoom out, zoom in, actual size                 |
+1. Press one of the first six keys and verify Claude selects the matching task
+   in its **Recents** list without coming forward.
+2. Use **Fast mode** to switch Claude's effort control to its fastest setting;
+   press it again to restore the previous effort.
+3. Test **Confirm** only when Claude is visibly asking for confirmation.
+4. Test **Cancel** while a response is running.
+5. Test **Fork** on a response you are comfortable forking.
+6. Press either half of the double-width voice key to toggle voice input.
+7. Use **Send** only after entering a test prompt.
+8. Turn the dial one step in each direction to test zoom, then press it to
+   restore actual size.
 
-New Conversation opens a new Claude conversation, so use it only when you are
-ready to leave the current one.
+Confirm, Fork, Voice, and Send change the current Claude task, so test them on a
+conversation where those actions are safe.
 
 The top-left key has two gestures:
 
-- Single tap: New Conversation
+- Single tap: select recent task 1 in the background
 - Double tap within 250 ms: bring Claude to the front
 
 The single-tap action waits briefly for the 250 ms double-tap window to expire.
+
+### Status colors
+
+Layer 2 uses static lighting. Work Louder's current firmware provides one
+global set of six live task-light states shared across layers. Sending Claude
+status colors would overwrite Codex's protected Layer 1 colors, so the helper
+does not enable dynamic task colors.
 
 ## Switching layers
 

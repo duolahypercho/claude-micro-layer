@@ -89,6 +89,8 @@ export async function installFocusHelper({
     "Cocoa",
     "-framework",
     "Carbon",
+    "-framework",
+    "ApplicationServices",
     "-o",
     temporaryExecutable,
   ]);
