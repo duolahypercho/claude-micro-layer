@@ -11,6 +11,7 @@ import {
   loadJson,
   validateLayerPack,
 } from "../src/keymap.mjs";
+import { verifyDeviceKeymap } from "../src/input-sync.mjs";
 
 const exampleLayerPath = new URL(
   "../layers/claude-starter.json",
@@ -192,5 +193,15 @@ test("validation rejects an action reference that is not included", async () => 
   assert.throws(
     () => validateLayerPack(layerPack),
     /references missing action KA_0/,
+  );
+});
+
+test("hardware sync accepts only the exact device checksum", () => {
+  const files = [{ name: "keymap.json", size: 8443, checksum: "expected" }];
+
+  assert.equal(verifyDeviceKeymap(files, "expected").size, 8443);
+  assert.throws(
+    () => verifyDeviceKeymap(files, "different"),
+    /Device checksum mismatch/,
   );
 });

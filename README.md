@@ -18,16 +18,20 @@ layers 2–6, and exported again after customization.
 - Only layers 2–6 can be installed.
 - Every real installation creates a timestamped backup first.
 - `--dry-run` validates without writing anything.
-- The tool edits Input's local `keymap.json`; it does not flash firmware.
+- `sync` writes only `keymap.json` and verifies its device checksum; it does not
+  flash firmware.
 
 ## Requirements
 
 - Node.js 20 or newer
 - Work Louder Input with a Codex Micro detected at least once
-- macOS for the currently verified path detection; Windows and Linux paths are
-  included but still need community verification
+- macOS for hardware sync; Windows and Linux keymap detection still need
+  community verification
 
 ## Quick start
+
+For the complete walkthrough, recovery steps, and troubleshooting, see the
+**[step-by-step setup guide](./SETUP.md)**.
 
 Clone the repository and verify the included layer:
 
@@ -57,8 +61,14 @@ node ./bin/claude-micro-layer.mjs install ./layers/claude-starter.json \
   --layer 2
 ```
 
-Open Input again to sync the updated keymap to the Codex Micro. After the
-device has synced, Input does not need to stay open for normal keyboard use.
+With Input still closed, sync the verified keymap to the Codex Micro:
+
+```sh
+node ./bin/claude-micro-layer.mjs sync
+```
+
+The sync command verifies the checksum reported by the keyboard and reopens
+Input normally when it finishes.
 
 ## Export your own layer
 
@@ -104,7 +114,7 @@ references use `KA_<id>`; installation converts them to Input's device-side
 
 The initial implementation was verified against:
 
-- Codex Micro firmware `3`
+- Codex Micro firmware `0.4.1`
 - Work Louder Input `0.17.2`
 - Input keymap format version `1`
 - Claude Desktop for macOS `1.24012.1`

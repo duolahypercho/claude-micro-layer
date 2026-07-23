@@ -9,6 +9,7 @@ import {
   loadJson,
   validateLayerPack,
 } from "../src/keymap.mjs";
+import { syncInputKeymap } from "../src/input-sync.mjs";
 
 function usage() {
   console.log(`claude-micro-layer
@@ -17,10 +18,11 @@ Usage:
   claude-micro-layer detect
   claude-micro-layer validate <layer-file>
   claude-micro-layer install <layer-file> --layer <2-6> [--profile <id>] [--keymap <path>] [--dry-run]
+  claude-micro-layer sync [--keymap <path>] [--input-app <path>]
   claude-micro-layer export --layer <2-6> --output <path> [--profile <id>] [--keymap <path>]
 
-Input should be closed before install. A timestamped backup is created beside
-the keymap before any change is written.`);
+Input should be closed before install or sync. Install creates a timestamped
+backup; sync writes the verified keymap to the keyboard and reopens Input.`);
 }
 
 function parseArgs(argv) {
@@ -48,6 +50,7 @@ function parseArgs(argv) {
     index += 1;
 
     if (name === "keymap") options.keymapPath = resolve(optionValue);
+    else if (name === "input-app") options.inputAppPath = resolve(optionValue);
     else if (name === "layer") options.layerNumber = Number(optionValue);
     else if (name === "profile") options.profileId = Number(optionValue);
     else if (name === "output") options.outputPath = resolve(optionValue);
@@ -91,7 +94,8 @@ async function main() {
   }
 
   if (command === "validate") {
-    if (positionals.length !== 1) throw new Error("validate requires one layer file");
+    if (positionals.length !== 1)
+      throw new Error("validate requires one layer file");
     const layerPack = await loadJson(resolve(positionals[0]));
     validateLayerPack(layerPack);
     console.log(`Valid layer pack: ${layerPack.name}`);
@@ -99,7 +103,8 @@ async function main() {
   }
 
   if (command === "install") {
-    if (positionals.length !== 1) throw new Error("install requires one layer file");
+    if (positionals.length !== 1)
+      throw new Error("install requires one layer file");
     if (!options.layerNumber) throw new Error("install requires --layer <2-6>");
 
     const keymapPath = await resolveKeymapPath(options.keymapPath);
@@ -112,12 +117,30 @@ async function main() {
     });
 
     if (result.dryRun) {
-      console.log(`Dry run passed: ${result.layerName} can be installed as Layer ${result.layerNumber}.`);
+      console.log(
+        `Dry run passed: ${result.layerName} can be installed as Layer ${result.layerNumber}.`,
+      );
     } else {
-      console.log(`Installed ${result.layerName} as Layer ${result.layerNumber}.`);
+      console.log(
+        `Installed ${result.layerName} as Layer ${result.layerNumber}.`,
+      );
       console.log(`Backup: ${result.backupPath}`);
-      console.log("Open Input to sync the updated keymap to the keyboard.");
+      console.log(
+        "Run `node ./bin/claude-micro-layer.mjs sync` while Input is closed to update the keyboard.",
+      );
     }
+    return;
+  }
+
+  if (command === "sync") {
+    const keymapPath = await resolveKeymapPath(options.keymapPath);
+    const result = await syncInputKeymap({
+      keymapPath,
+      inputAppPath: options.inputAppPath,
+    });
+    console.log(`Synced keymap to Codex Micro device ${result.deviceId}.`);
+    console.log(`Verified checksum: ${result.checksum}`);
+    console.log("Work Louder Input has been reopened normally.");
     return;
   }
 
