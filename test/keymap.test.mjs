@@ -80,19 +80,28 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A1",
   ]);
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[3], [
-    "KC_ESC",
-    "KC_TAB",
-    "KC_ENTER",
+    "KA_A13",
+    "KA_A14",
+    "KA_A15",
   ]);
-  assert.equal(updated.macros.length, 13);
+  assert.equal(updated.macros.length, 16);
   assert.equal(updated.macros[0].name, "New Conversation");
+  assert.equal(updated.macros[0].icon, "icon-message-fas");
+  assert.equal(
+    updated.macros.every((macro) => macro.icon?.startsWith("icon-")),
+    true,
+  );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
     ["KC_LGUI", "KC_N", "KC_LGUI"],
   );
   assert.deepEqual(
+    updated.macros.slice(13).map((macro) => macro.actions[0].kc),
+    ["KC_ESC", "KC_TAB", "KC_ENTER"],
+  );
+  assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 13 }, (_, index) => index),
+    Array.from({ length: 16 }, (_, index) => index),
   );
   assert.equal(
     keymap.profiles[0].layers.length,
@@ -123,7 +132,7 @@ test("installing actions allocates IDs after existing Input macros", async () =>
   assert.equal(updated.macros[1].id, 6);
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 14 }, (_, index) => index + 5),
+    Array.from({ length: 17 }, (_, index) => index + 5),
   );
 });
 
@@ -161,7 +170,7 @@ test("install creates a backup and writes valid JSON", async () => {
   const backup = JSON.parse(await readFile(result.backupPath, "utf8"));
 
   assert.equal(installed.profiles[0].layers[1].name, "Claude Desktop");
-  assert.equal(installed.macros.length, 13);
+  assert.equal(installed.macros.length, 16);
   assert.equal(backup.profiles[0].layers.length, 1);
   assert.equal(backup.macros.length, 0);
 });
@@ -178,8 +187,10 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.layer.name, "Claude Desktop");
   assert.equal("id" in exported.layer, false);
   assert.deepEqual(exported.layer.layout.keymap[0], ["KA_0", "KA_1"]);
-  assert.equal(exported.actions.length, 13);
+  assert.equal(exported.actions.length, 16);
   assert.equal(exported.actions[0].name, "New Conversation");
+  assert.equal(exported.actions[0].icon, "icon-message-fas");
+  assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
     ["KC_LGUI", "KC_N", "KC_LGUI"],

@@ -89,6 +89,10 @@ The included pack carries its shortcut actions with it. The installer allocates
 unused Input action IDs and rewrites the layer references, so it does not depend
 on action numbers from the computer where the pack was created.
 
+Every control has an icon from the SVG icon library bundled with Work Louder
+Input. Descriptive action names remain available in Input for tooltips and
+editing, while the keyboard preview uses the icons.
+
 | Control group       | Mapping                                        |
 | ------------------- | ---------------------------------------------- |
 | Top two keys        | New Conversation (`⌘N`), Open File (`⌘O`)      |
@@ -109,6 +113,10 @@ the correct ID based on `--layer`. Optional `actions` use Input's readable actio
 shape (`keyInputs` with `keycode`, `delay`, and `actionType`). Portable layer
 references use `KA_<id>`; installation converts them to Input's device-side
 `KA_A<id>` references after resolving collisions.
+
+Action icons use Input's bundled SVG-library codes, such as
+`icon-folder-open-fas`. Keeping the library code in the JSON instead of copying
+SVG markup lets Input render the icon at the correct size and color.
 
 ## Compatibility
 

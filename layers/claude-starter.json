@@ -11,7 +11,7 @@
       "id": 0,
       "name": "New Conversation",
       "color": null,
-      "icon": null,
+      "icon": "icon-message-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_N", "delay": 0, "actionType": 1 },
@@ -22,7 +22,7 @@
       "id": 1,
       "name": "Open File",
       "color": null,
-      "icon": null,
+      "icon": "icon-folder-open-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_O", "delay": 0, "actionType": 1 },
@@ -33,7 +33,7 @@
       "id": 2,
       "name": "Undo",
       "color": null,
-      "icon": null,
+      "icon": "icon-arrow-rotate-left-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_Z", "delay": 0, "actionType": 1 },
@@ -44,7 +44,7 @@
       "id": 3,
       "name": "Redo",
       "color": null,
-      "icon": null,
+      "icon": "icon-arrow-rotate-right-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LSFT", "delay": 0, "actionType": 1 },
@@ -57,7 +57,7 @@
       "id": 4,
       "name": "Find",
       "color": null,
-      "icon": null,
+      "icon": "icon-magnifying-glass-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_F", "delay": 0, "actionType": 1 },
@@ -68,7 +68,7 @@
       "id": 5,
       "name": "Reload",
       "color": null,
-      "icon": null,
+      "icon": "icon-arrows-rotate-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_R", "delay": 0, "actionType": 1 },
@@ -79,7 +79,7 @@
       "id": 6,
       "name": "Copy",
       "color": null,
-      "icon": null,
+      "icon": "icon-copy-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_C", "delay": 0, "actionType": 1 },
@@ -90,7 +90,7 @@
       "id": 7,
       "name": "Paste",
       "color": null,
-      "icon": null,
+      "icon": "icon-paste-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_V", "delay": 0, "actionType": 1 },
@@ -101,7 +101,7 @@
       "id": 8,
       "name": "Paste and Match Style",
       "color": null,
-      "icon": null,
+      "icon": "icon-paintbrush-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LSFT", "delay": 0, "actionType": 1 },
@@ -114,7 +114,7 @@
       "id": 9,
       "name": "Select All",
       "color": null,
-      "icon": null,
+      "icon": "icon-check-double-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_A", "delay": 0, "actionType": 1 },
@@ -125,7 +125,7 @@
       "id": 10,
       "name": "Zoom Out",
       "color": null,
-      "icon": null,
+      "icon": "icon-magnifying-glass-minus-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_MINS", "delay": 0, "actionType": 1 },
@@ -136,7 +136,7 @@
       "id": 11,
       "name": "Zoom In",
       "color": null,
-      "icon": null,
+      "icon": "icon-magnifying-glass-plus-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_EQL", "delay": 0, "actionType": 1 },
@@ -147,11 +147,38 @@
       "id": 12,
       "name": "Actual Size",
       "color": null,
-      "icon": null,
+      "icon": "icon-maximize-fas",
       "keyInputs": [
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
         { "keycode": "KC_0", "delay": 0, "actionType": 1 },
         { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Escape",
+      "color": null,
+      "icon": "icon-xmark-fas",
+      "keyInputs": [
+        { "keycode": "KC_ESC", "delay": 0, "actionType": 2 }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Tab",
+      "color": null,
+      "icon": "icon-arrow-right-long-fas",
+      "keyInputs": [
+        { "keycode": "KC_TAB", "delay": 0, "actionType": 2 }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Enter",
+      "color": null,
+      "icon": "icon-arrow-turn-down-fas",
+      "keyInputs": [
+        { "keycode": "KC_ENTER", "delay": 0, "actionType": 2 }
       ]
     }
   ],
@@ -163,7 +190,7 @@
         ["KA_0", "KA_1"],
         ["KA_2", "KA_3", "KA_4", "KA_5"],
         ["KA_6", "KA_7", "KA_8", "KA_9"],
-        ["KC_ESC", "KC_TAB", "KC_ENTER"]
+        ["KA_13", "KA_14", "KA_15"]
       ],
       "encoders": [["KA_10", "KA_11", "KA_12"]],
       "joystick": {

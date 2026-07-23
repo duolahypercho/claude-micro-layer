@@ -132,8 +132,9 @@ is that the command reports a verified checksum and exits successfully.
 2. Open the **Keymap** tab.
 3. Select the circle labelled **2** under Layers.
 4. Confirm that the layer name is **Claude Desktop**.
-5. Confirm that actions such as **New Conversation**, **Open File**, **Undo**,
-   and **Redo** appear on the keyboard preview.
+5. Confirm that SVG icons appear on all keys and dial controls. Hover over or
+   select an icon to see action names such as **New Conversation**, **Open
+   File**, **Undo**, and **Redo**.
 
 ## 9. Test the Claude controls
 
