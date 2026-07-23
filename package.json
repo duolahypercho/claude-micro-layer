@@ -1,0 +1,24 @@
+{
+  "name": "claude-micro-layer",
+  "version": "0.1.0",
+  "description": "Shareable Work Louder Input layers for Codex Micro, starting with a Claude-friendly layout.",
+  "type": "module",
+  "bin": {
+    "claude-micro-layer": "./bin/claude-micro-layer.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate": "node ./bin/claude-micro-layer.mjs validate ./layers/claude-starter.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "claude",
+    "codex-micro",
+    "work-louder",
+    "keyboard",
+    "keymap"
+  ],
+  "license": "MIT"
+}

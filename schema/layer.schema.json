@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/duolahypercho/claude-micro-layer/blob/main/schema/layer.schema.json",
+  "title": "Claude Micro Layer Pack",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "device",
+    "name",
+    "layer"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "device": {
+      "const": "codex_micro"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "layer": {
+      "type": "object",
+      "required": [
+        "name",
+        "layout"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777215
+        },
+        "layout": {
+          "type": "object",
+          "required": [
+            "keymap"
+          ],
+          "properties": {
+            "keymap": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/twoKeys"
+                },
+                {
+                  "$ref": "#/$defs/fourKeys"
+                },
+                {
+                  "$ref": "#/$defs/fourKeys"
+                },
+                {
+                  "$ref": "#/$defs/threeKeys"
+                }
+              ],
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "encoders": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/threeKeys"
+                }
+              ],
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "joystick": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": true
+        },
+        "lights": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "keycode": {
+      "type": "string",
+      "minLength": 1
+    },
+    "twoKeys": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/keycode"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "threeKeys": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/keycode"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "fourKeys": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/keycode"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    }
+  },
+  "additionalProperties": true
+}

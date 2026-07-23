@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/layer.schema.json",
+  "formatVersion": 1,
+  "device": "codex_micro",
+  "name": "Claude Starter",
+  "description": "A conservative prompt-editing and navigation layer for Claude workflows.",
+  "author": "duolahypercho",
+  "layer": {
+    "name": "Claude Starter",
+    "color": 10395294,
+    "layout": {
+      "keymap": [
+        [
+          "KC_ESC",
+          "KC_ENTER"
+        ],
+        [
+          "KC_1",
+          "KC_2",
+          "KC_3",
+          "KC_4"
+        ],
+        [
+          "KC_LEFT",
+          "KC_DOWN",
+          "KC_UP",
+          "KC_RIGHT"
+        ],
+        [
+          "KC_TAB",
+          "KC_SPACE",
+          "KC_BSPC"
+        ]
+      ],
+      "encoders": [
+        [
+          "KC_VOLD",
+          "KC_VOLU",
+          "KC_MUTE"
+        ]
+      ],
+      "joystick": {
+        "type": "RADIAL",
+        "sectors": []
+      }
+    },
+    "lights": {
+      "backlight": {
+        "effect": "solid",
+        "brightness": 1,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 10395294
+      },
+      "underglow": {
+        "effect": "solid",
+        "brightness": 0.7,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 10395294
+      }
+    }
+  }
+}
