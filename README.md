@@ -119,10 +119,35 @@ first task-control press may show a macOS permission prompt. Grant the installed
 `claude-micro-focus` helper access under **System Settings → Privacy & Security
 → Accessibility**.
 
-Codex's live task colors cannot currently be reproduced safely on Layer 2. The
-firmware exposes one global set of six task-light states rather than independent
-states per layer, so a Claude lighting bridge would overwrite the protected
-Codex Layer 1 colors. Layer 2 therefore keeps its configured static lighting.
+## Live status lights
+
+The helper can mirror Claude chat status on the six task keys using the
+keyboard's per-key task lighting. Enable it with:
+
+```sh
+node ./bin/claude-micro-layer.mjs lights on
+```
+
+| Chat status                  | Key light         |
+| ---------------------------- | ----------------- |
+| Finished, result unread      | Green, blinking   |
+| Working or awaiting approval | Orange, blinking  |
+| Idle                         | Orange, steady    |
+| Error                        | Red, blinking     |
+| Empty slot                   | Off               |
+
+Status lights are volatile device state sent over the keyboard's vendor
+RPC channel; the keymap file and the protected Codex Layer 1 configuration
+are never written. The helper reads the active layer from the keyboard and
+only paints while Layer 2 is selected, clears the lights when lighting is
+disabled or the helper exits, and turns everything off when Claude is not
+running. The first time lights are enabled, macOS asks once for **Input
+Monitoring** access for `claude-micro-focus`.
+
+Because the firmware exposes one shared set of six task lights, avoid running
+Claude status lights while the Codex app is actively driving the same keys;
+the two would overwrite each other. Disable with
+`node ./bin/claude-micro-layer.mjs lights off`.
 
 The Claude commands were checked against the installed Claude Desktop macOS
 application. General editing commands continue to work in other applications,

@@ -47,7 +47,7 @@ private let hotKeyBindings = [
 private var registeredHotKeys: [EventHotKeyRef] = []
 private var lastNonFastEffort: Double = 2
 
-private func runningClaude() -> NSRunningApplication? {
+func runningClaude() -> NSRunningApplication? {
     NSRunningApplication.runningApplications(
         withBundleIdentifier: claudeBundleIdentifier
     ).first
@@ -90,7 +90,7 @@ private func hasAccessibilityPermission() -> Bool {
     return false
 }
 
-private func attribute(_ element: AXUIElement, _ name: String) -> CFTypeRef? {
+func attribute(_ element: AXUIElement, _ name: String) -> CFTypeRef? {
     var value: CFTypeRef?
     guard AXUIElementCopyAttributeValue(element, name as CFString, &value) == .success else {
         return nil
@@ -98,11 +98,11 @@ private func attribute(_ element: AXUIElement, _ name: String) -> CFTypeRef? {
     return value
 }
 
-private func stringAttribute(_ element: AXUIElement, _ name: String) -> String? {
+func stringAttribute(_ element: AXUIElement, _ name: String) -> String? {
     attribute(element, name) as? String
 }
 
-private func elementLabel(_ element: AXUIElement) -> String {
+func elementLabel(_ element: AXUIElement) -> String {
     for name in [
         kAXTitleAttribute,
         kAXDescriptionAttribute,
@@ -116,15 +116,15 @@ private func elementLabel(_ element: AXUIElement) -> String {
     return ""
 }
 
-private func children(_ element: AXUIElement) -> [AXUIElement] {
+func children(_ element: AXUIElement) -> [AXUIElement] {
     attribute(element, kAXChildrenAttribute) as? [AXUIElement] ?? []
 }
 
-private func isEnabled(_ element: AXUIElement) -> Bool {
+func isEnabled(_ element: AXUIElement) -> Bool {
     (attribute(element, kAXEnabledAttribute) as? Bool) ?? true
 }
 
-private func isPressable(_ element: AXUIElement) -> Bool {
+func isPressable(_ element: AXUIElement) -> Bool {
     var names: CFArray?
     guard AXUIElementCopyActionNames(element, &names) == .success else {
         return false
@@ -132,7 +132,7 @@ private func isPressable(_ element: AXUIElement) -> Bool {
     return (names as? [String])?.contains(kAXPressAction as String) ?? false
 }
 
-private func allElements(_ application: NSRunningApplication) -> [AXUIElement] {
+func allElements(_ application: NSRunningApplication) -> [AXUIElement] {
     let root = AXUIElementCreateApplication(application.processIdentifier)
     var pending = [root]
     var pendingIndex = 0
@@ -153,7 +153,7 @@ private func allElements(_ application: NSRunningApplication) -> [AXUIElement] {
     return result
 }
 
-private func normalized(_ value: String) -> String {
+func normalized(_ value: String) -> String {
     value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 }
 
@@ -179,7 +179,11 @@ private func pressControl(
     return pressElement(target)
 }
 
-private func sendKey(_ keyCode: CGKeyCode, to application: NSRunningApplication) {
+private func sendKey(
+    _ keyCode: CGKeyCode,
+    flags: CGEventFlags = [],
+    to application: NSRunningApplication
+) {
     guard
         let source = CGEventSource(stateID: .hidSystemState),
         let keyDown = CGEvent(
@@ -195,45 +199,47 @@ private func sendKey(_ keyCode: CGKeyCode, to application: NSRunningApplication)
     else {
         return
     }
+    keyDown.flags = flags
+    keyUp.flags = flags
     keyDown.postToPid(application.processIdentifier)
     keyUp.postToPid(application.processIdentifier)
 }
 
+// Claude's dictation control is a composer checkbox with no keyboard
+// shortcut (verified via the accessibility tree: "Press and hold to
+// record" inside the "Dictation" group), so toggle it directly.
 private func activateVoiceControl(in application: NSRunningApplication) {
     if pressControl(
         in: application,
-        labels: ["Dictation", "Start dictation", "Voice input", "Start voice mode"]
+        labels: [
+            "Press and hold to record",
+            "Stop recording",
+            "Dictation",
+            "Start dictation",
+            "Voice input",
+        ]
     ) {
         return
     }
-
-    let wanted = ["dictation", "start dictation", "voice input", "start voice mode"]
-    guard let target = allElements(application).first(where: { element in
-        isEnabled(element) && wanted.contains(normalized(elementLabel(element)))
-    }) else {
-        return
-    }
-    guard AXUIElementSetAttributeValue(
-        target,
-        kAXFocusedAttribute as CFString,
-        kCFBooleanTrue
-    ) == .success else {
-        return
-    }
-    sendKey(CGKeyCode(kVK_Return), to: application)
+    _ = pressControl(in: application, labels: ["Start Dictation…"])
 }
 
-private let recentStatusPrefixes = [
-    "working ",
-    "unread ",
+// Verified against Claude Desktop 1.24012.1: sidebar recents are AXButtons
+// labeled "<Status> <chat title>", currently "Running" or "Idle". The extra
+// prefixes cover states that appear only transiently.
+let recentStatusPrefixes = [
+    "running ",
     "idle ",
+    "unread ",
+    "working ",
     "awaiting approval ",
     "awaiting response ",
+    "needs attention ",
     "error ",
 ]
 
-private func pressRecentTask(_ index: Int, in application: NSRunningApplication) {
-    let recentTasks = allElements(application).filter { element in
+func recentTaskButtons(in application: NSRunningApplication) -> [AXUIElement] {
+    allElements(application).filter { element in
         guard
             stringAttribute(element, kAXRoleAttribute) == (kAXButtonRole as String),
             isPressable(element),
@@ -244,8 +250,63 @@ private func pressRecentTask(_ index: Int, in application: NSRunningApplication)
         let label = normalized(elementLabel(element))
         return recentStatusPrefixes.contains { label.hasPrefix($0) }
     }
+}
+
+// Claude has no keyboard shortcut for selecting recents, so press the
+// sidebar button directly; this also works with Claude in the background.
+private func pressRecentTask(_ index: Int, in application: NSRunningApplication) {
+    let recentTasks = recentTaskButtons(in: application)
     guard recentTasks.indices.contains(index) else { return }
     _ = pressElement(recentTasks[index])
+}
+
+// MARK: - Recent task status polling for the lights engine
+
+private var cachedRecentTaskButtons: [AXUIElement] = []
+private var lastRecentTaskScan = Date.distantPast
+private let recentTaskRescanInterval: TimeInterval = 10
+
+private func statusWords(fromCachedButtons slotCount: Int) -> (statuses: [String?], stale: Bool) {
+    var statuses: [String?] = []
+    var stale = false
+    for index in 0..<slotCount {
+        guard cachedRecentTaskButtons.indices.contains(index) else {
+            statuses.append(nil)
+            continue
+        }
+        let label = normalized(elementLabel(cachedRecentTaskButtons[index]))
+        if let prefix = recentStatusPrefixes.first(where: { label.hasPrefix($0) }) {
+            statuses.append(prefix.trimmingCharacters(in: .whitespaces))
+        } else {
+            statuses.append(nil)
+            stale = true
+        }
+    }
+    return (statuses, stale)
+}
+
+/// Returns one normalized status word per task slot ("working", "idle",
+/// "unread", "awaiting approval", "awaiting response", "error"), or nil for
+/// empty slots. Returns nil when Claude is not running or accessibility
+/// access has not been granted. Full accessibility scans are throttled;
+/// between scans only the cached buttons' labels are re-read.
+func recentTaskStatuses(slotCount: Int) -> [String?]? {
+    guard AXIsProcessTrusted(), let application = runningClaude() else { return nil }
+
+    let now = Date()
+    if cachedRecentTaskButtons.isEmpty
+        || now.timeIntervalSince(lastRecentTaskScan) > recentTaskRescanInterval {
+        cachedRecentTaskButtons = recentTaskButtons(in: application)
+        lastRecentTaskScan = now
+    }
+
+    var result = statusWords(fromCachedButtons: slotCount)
+    if result.stale {
+        cachedRecentTaskButtons = recentTaskButtons(in: application)
+        lastRecentTaskScan = now
+        result = statusWords(fromCachedButtons: slotCount)
+    }
+    return result.statuses
 }
 
 private func effortSlider(in application: NSRunningApplication) -> AXUIElement? {
@@ -371,42 +432,100 @@ private let hotKeyHandler: EventHandlerUPP = { _, event, _ in
     return noErr
 }
 
-NSApplication.shared.setActivationPolicy(.prohibited)
+private var shutdownSignalSources: [DispatchSourceSignal] = []
 
-var eventType = EventTypeSpec(
-    eventClass: OSType(kEventClassKeyboard),
-    eventKind: UInt32(kEventHotKeyPressed)
-)
-var eventHandlerReference: EventHandlerRef?
-let installStatus = InstallEventHandler(
-    GetApplicationEventTarget(),
-    hotKeyHandler,
-    1,
-    &eventType,
-    nil,
-    &eventHandlerReference
-)
-guard installStatus == noErr else {
-    fputs("Unable to install the global hotkey handler (\(installStatus)).\n", stderr)
-    exit(1)
-}
-
-for binding in hotKeyBindings {
-    var reference: EventHotKeyRef?
-    let id = EventHotKeyID(signature: hotKeySignature, id: binding.command.rawValue)
-    let status = RegisterEventHotKey(
-        binding.keyCode,
-        hotKeyModifiers,
-        id,
-        GetApplicationEventTarget(),
-        0,
-        &reference
-    )
-    guard status == noErr, let reference else {
-        fputs("Unable to register Claude Micro hotkey \(binding.command.rawValue) (\(status)).\n", stderr)
-        exit(1)
+private func installShutdownHandlers(for engine: LightsEngine) {
+    for signalNumber in [SIGTERM, SIGINT] {
+        signal(signalNumber, SIG_IGN)
+        let source = DispatchSource.makeSignalSource(signal: signalNumber, queue: .main)
+        source.setEventHandler {
+            engine.shutdown { exit(0) }
+        }
+        source.resume()
+        shutdownSignalSources.append(source)
     }
-    registeredHotKeys.append(reference)
 }
 
-NSApplication.shared.run()
+private func dumpAccessibilityTree() {
+    guard AXIsProcessTrusted() else {
+        print("No accessibility access for this binary.")
+        return
+    }
+    guard let application = runningClaude() else {
+        print("Claude is not running.")
+        return
+    }
+    for element in allElements(application) {
+        let role = stringAttribute(element, kAXRoleAttribute) ?? "?"
+        let label = elementLabel(element)
+        guard !label.isEmpty else { continue }
+        let pressable = isPressable(element) ? "pressable" : "-"
+        print("\(role)\t\(pressable)\t\(label.prefix(100))")
+    }
+}
+
+@main
+enum ClaudeMicroFocusApp {
+    static func main() {
+        if CommandLine.arguments.contains("--dump-ax") {
+            dumpAccessibilityTree()
+            return
+        }
+
+        NSApplication.shared.setActivationPolicy(.prohibited)
+
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+        var eventHandlerReference: EventHandlerRef?
+        let installStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            hotKeyHandler,
+            1,
+            &eventType,
+            nil,
+            &eventHandlerReference
+        )
+        guard installStatus == noErr else {
+            fputs("Unable to install the global hotkey handler (\(installStatus)).\n", stderr)
+            exit(1)
+        }
+
+        for binding in hotKeyBindings {
+            var reference: EventHotKeyRef?
+            let id = EventHotKeyID(signature: hotKeySignature, id: binding.command.rawValue)
+            let status = RegisterEventHotKey(
+                binding.keyCode,
+                hotKeyModifiers,
+                id,
+                GetApplicationEventTarget(),
+                0,
+                &reference
+            )
+            guard status == noErr, let reference else {
+                fputs("Unable to register Claude Micro hotkey \(binding.command.rawValue) (\(status)).\n", stderr)
+                exit(1)
+            }
+            registeredHotKeys.append(reference)
+        }
+
+        let lightsEngine = LightsEngine(statusProvider: {
+            recentTaskStatuses(slotCount: lightsSlotCount)
+        })
+        // The keyboard's Codex-controlled Layer 1 task keys arrive as vendor
+        // HID notifications; map them to the same recent-chat commands so the
+        // status lights and the keys work together on Layer 1.
+        let recentCommands: [ClaudeCommand] = [
+            .recent1, .recent2, .recent3, .recent4, .recent5, .recent6,
+        ]
+        lightsEngine.onTaskKeyPressed = { slot in
+            guard recentCommands.indices.contains(slot) else { return }
+            handleClaudeCommand(recentCommands[slot])
+        }
+        lightsEngine.start()
+        installShutdownHandlers(for: lightsEngine)
+
+        NSApplication.shared.run()
+    }
+}

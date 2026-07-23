@@ -4,6 +4,11 @@ import { resolve } from "node:path";
 
 import { installFocusHelper } from "../src/focus-helper.mjs";
 import {
+  lightsConfigPath,
+  readLightsConfig,
+  setLightsEnabled,
+} from "../src/lights-config.mjs";
+import {
   detectKeymaps,
   exportLayer,
   installLayer,
@@ -22,9 +27,12 @@ Usage:
   claude-micro-layer sync [--keymap <path>] [--input-app <path>]
   claude-micro-layer export --layer <2-6> --output <path> [--profile <id>] [--keymap <path>]
   claude-micro-layer focus-helper install
+  claude-micro-layer lights on|off|status
 
 Input should be closed before install or sync. Install creates a timestamped
-backup; sync writes the verified keymap to the keyboard and reopens Input.`);
+backup; sync writes the verified keymap to the keyboard and reopens Input.
+Lights mirror Claude chat statuses on the six task keys while Layer 2 is
+active; the helper needs macOS Input Monitoring access the first time.`);
 }
 
 function parseArgs(argv) {
@@ -168,6 +176,42 @@ async function main() {
     const result = await installFocusHelper();
     console.log(`Installed Claude focus helper: ${result.executablePath}`);
     console.log("Double-tap focus shortcut: Control-Option-Command-C");
+    return;
+  }
+
+  if (command === "lights") {
+    const subcommand = positionals[0];
+    if (positionals.length !== 1 || !["on", "off", "status"].includes(subcommand)) {
+      throw new Error("lights requires one subcommand: on, off, or status");
+    }
+
+    if (subcommand === "status") {
+      const config = await readLightsConfig();
+      console.log(`Lights are ${config.enabled ? "enabled" : "disabled"}.`);
+      console.log(`Configuration: ${lightsConfigPath()}`);
+      console.log(JSON.stringify(config, null, 2));
+      return;
+    }
+
+    const enabled = subcommand === "on";
+    const result = await setLightsEnabled(enabled);
+    console.log(`Lights ${enabled ? "enabled" : "disabled"}.`);
+    console.log(`Configuration: ${result.path}`);
+    if (enabled) {
+      console.log(
+        "The claude-micro-focus helper applies this within a few seconds.",
+      );
+      console.log(
+        "If the helper predates lights support, reinstall it first:",
+      );
+      console.log("  node ./bin/claude-micro-layer.mjs focus-helper install");
+      console.log(
+        "macOS asks once for Input Monitoring access; grant it to claude-micro-focus under",
+      );
+      console.log(
+        "System Settings → Privacy & Security → Input Monitoring.",
+      );
+    }
     return;
   }
 

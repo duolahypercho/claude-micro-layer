@@ -194,10 +194,39 @@ The single-tap action waits briefly for the 250 ms double-tap window to expire.
 
 ### Status colors
 
-Layer 2 uses static lighting. Work Louder's current firmware provides one
-global set of six live task-light states shared across layers. Sending Claude
-status colors would overwrite Codex's protected Layer 1 colors, so the helper
-does not enable dynamic task colors.
+The helper can light the six task keys with each chat's live status. Enable
+it with:
+
+```sh
+node ./bin/claude-micro-layer.mjs lights on
+```
+
+The first time, macOS asks for **Input Monitoring** access. Open **System
+Settings → Privacy & Security → Input Monitoring** and enable
+`claude-micro-focus`. Colors follow the chat status: green blinking when a
+finished result is waiting, orange blinking while working or awaiting
+approval, orange steady when idle, red blinking on error.
+
+The lights are sent over the keyboard's vendor RPC channel and are never
+written to the keymap, so the protected Codex Layer 1 configuration is
+untouched. The helper reads the active layer from the keyboard and only
+paints while Layer 2 is selected; it clears the lights when you run
+`lights off`, when Claude quits, or when the helper stops. Do not run the
+lights while the Codex app is actively driving the same task keys — the
+firmware has one shared set of six task lights and the two writers would
+overwrite each other.
+
+Colors and polling can be customized in
+`~/Library/Application Support/ClaudeMicroLayer/lights.json`
+(`colors.pass`, `colors.active`, `colors.error` as `#RRGGBB`,
+`pollIntervalMs`, `rpcTimeoutMs`, and `claudeLayerIndex`, zero-based, `-1` to
+disable layer gating). Check the current settings with
+`node ./bin/claude-micro-layer.mjs lights status`.
+
+While the keyboard sits untouched it sleeps its Bluetooth link and can take up
+to a minute or two to repaint; while you are actively using it, lights update
+within a few seconds. When the keyboard has fully disconnected, press any key
+to wake it.
 
 ## Switching layers
 
@@ -268,3 +297,14 @@ node ./bin/claude-micro-layer.mjs focus-helper install
 
 If the keyboard shortcut works but the double tap does not, reinstall the layer,
 sync it again, and make sure both taps occur within 250 ms.
+
+### Task controls or lights stop working after reinstalling the helper
+
+The installer signs the helper with a code-signing identity from your keychain
+(or a generated one) so that macOS permission grants survive reinstalls. If no
+signing identity is available, the helper falls back to an ad-hoc signature and
+every rebuild invalidates the grants. In that case — or after the signature
+changes for any reason — open **System Settings → Privacy & Security**, and in
+both **Accessibility** and **Input Monitoring** remove `claude-micro-focus`
+with the **−** button and re-add it with **+** (toggling alone does not rebind
+the entry to the new build).

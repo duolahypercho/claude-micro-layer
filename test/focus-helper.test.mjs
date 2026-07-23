@@ -8,7 +8,9 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 import {
+  FOCUS_HELPER_SOURCES,
   createLaunchAgentPlist,
+  focusHelperCompileArgs,
   focusHelperPaths,
 } from "../src/focus-helper.mjs";
 
@@ -39,23 +41,34 @@ test("focus helper launch agent starts the exact installed executable", () => {
   assert.match(plist, /<key>KeepAlive<\/key>\s*<true\/>/);
 });
 
+test("focus helper compiles both Swift sources with IOKit for lights", () => {
+  assert.deepEqual(
+    FOCUS_HELPER_SOURCES.map((path) => path.split("/").pop()),
+    ["ClaudeMicroFocus.swift", "ClaudeMicroLights.swift"],
+  );
+
+  const args = focusHelperCompileArgs(FOCUS_HELPER_SOURCES, "/tmp/out");
+  for (const source of FOCUS_HELPER_SOURCES) assert.ok(args.includes(source));
+  assert.ok(args.includes("IOKit"));
+  assert.deepEqual(args.slice(-2), ["-o", "/tmp/out"]);
+});
+
 test(
-  "focus helper Swift source compiles on macOS",
+  "focus helper Swift sources compile on macOS",
   { skip: process.platform !== "darwin" },
   async () => {
     const temporaryDirectory = await mkdtemp(
       join(os.tmpdir(), "claude-micro-focus-test-"),
     );
-    await execFileAsync("/usr/bin/swiftc", [
-      resolve(testDirectory, "../macos/ClaudeMicroFocus.swift"),
-      "-framework",
-      "Cocoa",
-      "-framework",
-      "Carbon",
-      "-framework",
-      "ApplicationServices",
-      "-o",
-      join(temporaryDirectory, "claude-micro-focus"),
-    ]);
+    await execFileAsync(
+      "/usr/bin/swiftc",
+      focusHelperCompileArgs(
+        [
+          resolve(testDirectory, "../macos/ClaudeMicroFocus.swift"),
+          resolve(testDirectory, "../macos/ClaudeMicroLights.swift"),
+        ],
+        join(temporaryDirectory, "claude-micro-focus"),
+      ),
+    );
   },
 );
