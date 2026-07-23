@@ -1,7 +1,7 @@
 # Claude Micro Layer
 
 Open-source, shareable layers for the **Codex Micro** hardware, starting with a
-Claude-friendly prompt-editing layout.
+Claude Desktop layout for macOS.
 
 This project avoids repeated manual setup in Work Louder Input. Layer packs are
 plain JSON files that can be reviewed in Git, shared on GitHub, installed into
@@ -73,27 +73,32 @@ node ./bin/claude-micro-layer.mjs export \
 Review the exported JSON before committing it. Layer packs should not contain
 credentials or private application paths.
 
-## Included starter layout
+## Included Claude Desktop layout
 
-The first layer intentionally uses conservative, portable keycodes:
+The included pack carries its shortcut actions with it. The installer allocates
+unused Input action IDs and rewrites the layer references, so it does not depend
+on action numbers from the computer where the pack was created.
 
-| Control group | Mapping |
-| --- | --- |
-| Top two keys | Escape, Enter |
-| First four-key row | 1, 2, 3, 4 |
-| Second four-key row | Left, Down, Up, Right |
-| Bottom three keys | Tab, Space, Backspace |
-| Dial | Volume down, volume up, mute |
+| Control group       | Mapping                                        |
+| ------------------- | ---------------------------------------------- |
+| Top two keys        | New Conversation (`⌘N`), Open File (`⌘O`)      |
+| First four-key row  | Undo, Redo, Find, Reload                       |
+| Second four-key row | Copy, Paste, Paste and Match Style, Select All |
+| Bottom three keys   | Escape, Tab, Enter                             |
+| Dial                | Zoom out, zoom in, actual size                 |
 
-The starter avoids guessing application-specific Claude shortcuts. Community
-layers can add macros and richer workflows once their behavior has been tested
-against a documented Input release.
+The Claude commands were checked against the installed Claude Desktop macOS
+application. General editing commands continue to work in other applications,
+so switch to this layer only when you want these controls.
 
 ## Layer-pack format
 
 Layer packs use [`schema/layer.schema.json`](./schema/layer.schema.json). The
 payload mirrors one Input layer but omits its numeric `id`; the installer assigns
-the correct ID based on `--layer`.
+the correct ID based on `--layer`. Optional `actions` use Input's readable action
+shape (`keyInputs` with `keycode`, `delay`, and `actionType`). Portable layer
+references use `KA_<id>`; installation converts them to Input's device-side
+`KA_A<id>` references after resolving collisions.
 
 ## Compatibility
 
@@ -102,6 +107,7 @@ The initial implementation was verified against:
 - Codex Micro firmware `3`
 - Work Louder Input `0.17.2`
 - Input keymap format version `1`
+- Claude Desktop for macOS `1.24012.1`
 
 Always run `--dry-run` after upgrading Input or device firmware.
 

@@ -3,12 +3,7 @@
   "$id": "https://github.com/duolahypercho/claude-micro-layer/blob/main/schema/layer.schema.json",
   "title": "Claude Micro Layer Pack",
   "type": "object",
-  "required": [
-    "formatVersion",
-    "device",
-    "name",
-    "layer"
-  ],
+  "required": ["formatVersion", "device", "name", "layer"],
   "properties": {
     "formatVersion": {
       "const": 1
@@ -26,12 +21,19 @@
     "author": {
       "type": "string"
     },
+    "actionGroupColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    },
     "layer": {
       "type": "object",
-      "required": [
-        "name",
-        "layout"
-      ],
+      "required": ["name", "layout"],
       "properties": {
         "name": {
           "type": "string",
@@ -44,9 +46,7 @@
         },
         "layout": {
           "type": "object",
-          "required": [
-            "keymap"
-          ],
+          "required": ["keymap"],
           "properties": {
             "keymap": {
               "type": "array",
@@ -91,6 +91,50 @@
     }
   },
   "$defs": {
+    "action": {
+      "type": "object",
+      "required": ["id", "name", "keyInputs"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "type": ["string", "null"]
+        },
+        "icon": {
+          "type": ["string", "null"]
+        },
+        "keyInputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["keycode", "delay", "actionType"],
+            "properties": {
+              "keycode": {
+                "$ref": "#/$defs/keycode"
+              },
+              "delay": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "actionType": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "keycode": {
       "type": "string",
       "minLength": 1
