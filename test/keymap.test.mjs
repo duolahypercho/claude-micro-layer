@@ -76,7 +76,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   assert.equal(updated.profiles[0].layers[1].id, 1);
   assert.equal(updated.profiles[0].layers[1].name, "Claude Desktop");
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[0], [
-    "KA_A0",
+    "KA_M0",
     "KA_A1",
   ]);
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[3], [
@@ -84,7 +84,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A14",
     "KA_A15",
   ]);
-  assert.equal(updated.macros.length, 16);
+  assert.equal(updated.macros.length, 17);
   assert.equal(updated.macros[0].name, "New Conversation");
   assert.equal(updated.macros[0].icon, "icon-message-fas");
   assert.equal(
@@ -96,13 +96,18 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     ["KC_LGUI", "KC_N", "KC_LGUI"],
   );
   assert.deepEqual(
-    updated.macros.slice(13).map((macro) => macro.actions[0].kc),
+    updated.macros.slice(13, 16).map((macro) => macro.actions[0].kc),
     ["KC_ESC", "KC_TAB", "KC_ENTER"],
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 16 }, (_, index) => index),
+    Array.from({ length: 17 }, (_, index) => index),
   );
+  assert.equal(updated.multiActions.length, 1);
+  assert.equal(updated.multiActions[0].kcOnTap, "KA_A0");
+  assert.equal(updated.multiActions[0].kcOnDoubleTap, "KA_A16");
+  assert.equal(updated.multiActions[0].tt, 250);
+  assert.deepEqual(updated.profiles[0].multiActionsUsed, [0]);
   assert.equal(
     keymap.profiles[0].layers.length,
     1,
@@ -126,14 +131,37 @@ test("installing actions allocates IDs after existing Input macros", async () =>
   const updated = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[0], [
-    "KA_A6",
+    "KA_M0",
     "KA_A7",
   ]);
   assert.equal(updated.macros[1].id, 6);
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 17 }, (_, index) => index + 5),
+    Array.from({ length: 18 }, (_, index) => index + 5),
   );
+});
+
+test("installing a multiaction allocates an unused Input ID", async () => {
+  const keymap = fixtureKeymap();
+  keymap.multiActions.push({
+    id: 4,
+    name: "Existing multiaction",
+    color: null,
+    icon: null,
+    kcOnTap: "KC_A",
+    kcOnHold: "KC_NONE",
+    kcOnDoubleTap: "KC_B",
+    kcOnTapHold: "KC_NONE",
+    tt: 250,
+  });
+  keymap.profiles[0].multiActionsUsed.push(4);
+  const layerPack = await loadJson(exampleLayerPath);
+
+  const updated = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
+
+  assert.equal(updated.profiles[0].layers[1].layout.keymap[0][0], "KA_M5");
+  assert.equal(updated.multiActions[1].id, 5);
+  assert.deepEqual(updated.profiles[0].multiActionsUsed, [4, 5]);
 });
 
 test("Layer 1 cannot be replaced", async () => {
@@ -170,7 +198,8 @@ test("install creates a backup and writes valid JSON", async () => {
   const backup = JSON.parse(await readFile(result.backupPath, "utf8"));
 
   assert.equal(installed.profiles[0].layers[1].name, "Claude Desktop");
-  assert.equal(installed.macros.length, 16);
+  assert.equal(installed.macros.length, 17);
+  assert.equal(installed.multiActions.length, 1);
   assert.equal(backup.profiles[0].layers.length, 1);
   assert.equal(backup.macros.length, 0);
 });
@@ -186,8 +215,8 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.device, "codex_micro");
   assert.equal(exported.layer.name, "Claude Desktop");
   assert.equal("id" in exported.layer, false);
-  assert.deepEqual(exported.layer.layout.keymap[0], ["KA_0", "KA_1"]);
-  assert.equal(exported.actions.length, 16);
+  assert.deepEqual(exported.layer.layout.keymap[0], ["KM_0", "KA_1"]);
+  assert.equal(exported.actions.length, 17);
   assert.equal(exported.actions[0].name, "New Conversation");
   assert.equal(exported.actions[0].icon, "icon-message-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
@@ -195,6 +224,10 @@ test("an installed layer exports as a portable pack", async () => {
     exported.actions[0].keyInputs.map((input) => input.keycode),
     ["KC_LGUI", "KC_N", "KC_LGUI"],
   );
+  assert.equal(exported.multiActions.length, 1);
+  assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
+  assert.equal(exported.multiActions[0].doubleTap.keycode, "KA_16");
+  assert.equal(exported.multiActions[0].tappingTerms, 250);
 });
 
 test("validation rejects an action reference that is not included", async () => {
@@ -204,6 +237,16 @@ test("validation rejects an action reference that is not included", async () => 
   assert.throws(
     () => validateLayerPack(layerPack),
     /references missing action KA_0/,
+  );
+});
+
+test("validation rejects a multiaction reference that is not included", async () => {
+  const layerPack = await loadJson(exampleLayerPath);
+  layerPack.multiActions = [];
+
+  assert.throws(
+    () => validateLayerPack(layerPack),
+    /references missing multiaction KM_0/,
   );
 });
 

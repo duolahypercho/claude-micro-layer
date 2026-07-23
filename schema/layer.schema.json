@@ -31,6 +31,12 @@
         "$ref": "#/$defs/action"
       }
     },
+    "multiActions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/multiAction"
+      }
+    },
     "layer": {
       "type": "object",
       "required": ["name", "layout"],
@@ -131,6 +137,71 @@
             },
             "additionalProperties": false
           }
+        }
+      },
+      "additionalProperties": false
+    },
+    "multiAction": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "tap",
+        "onHold",
+        "doubleTap",
+        "tapHold",
+        "tappingTerms"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "type": ["string", "null"]
+        },
+        "icon": {
+          "type": ["string", "null"]
+        },
+        "tap": {
+          "$ref": "#/$defs/keyInput"
+        },
+        "onHold": {
+          "$ref": "#/$defs/keyInput"
+        },
+        "doubleTap": {
+          "$ref": "#/$defs/keyInput"
+        },
+        "tapHold": {
+          "$ref": "#/$defs/keyInput"
+        },
+        "tappingTerms": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 1000
+        }
+      },
+      "additionalProperties": false
+    },
+    "keyInput": {
+      "type": "object",
+      "required": ["keycode", "delay", "actionType"],
+      "properties": {
+        "keycode": {
+          "$ref": "#/$defs/keycode"
+        },
+        "delay": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actionType": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
         }
       },
       "additionalProperties": false

@@ -15,6 +15,9 @@ const MATRIX_WIDTHS = [2, 4, 4, 3];
 const MAX_LAYER = 6;
 const PORTABLE_ACTION_REF = /^KA_(\d+)$/;
 const DEVICE_ACTION_REF = /^KA_A(\d+)$/;
+const PORTABLE_MULTI_ACTION_REF = /^KM_(\d+)$/;
+const DEVICE_MULTI_ACTION_REF = /^KA_M(\d+)$/;
+const MULTI_ACTION_INPUTS = ["tap", "onHold", "doubleTap", "tapHold"];
 
 export async function loadJson(path) {
   let contents;
@@ -114,6 +117,22 @@ function mapLayerKeycodes(layer, mapper) {
   return mapped;
 }
 
+function validateKeyInput(input, label) {
+  assert(input && typeof input === "object", `${label} must be an object`);
+  assert(
+    typeof input.keycode === "string" && input.keycode,
+    `${label}.keycode is required`,
+  );
+  assert(
+    Number.isInteger(input.delay) && input.delay >= 0,
+    `${label}.delay is invalid`,
+  );
+  assert(
+    [0, 1, 2].includes(input.actionType),
+    `${label}.actionType must be 0, 1, or 2`,
+  );
+}
+
 function validateActions(actions) {
   assert(Array.isArray(actions), "layerPack.actions must be an array");
   const ids = new Set();
@@ -136,25 +155,43 @@ function validateActions(actions) {
       `${label}.keyInputs is required`,
     );
 
-    action.keyInputs.forEach((input, inputIndex) => {
-      const inputLabel = `${label}.keyInputs[${inputIndex}]`;
-      assert(
-        input && typeof input === "object",
-        `${inputLabel} must be an object`,
-      );
-      assert(
-        typeof input.keycode === "string" && input.keycode,
-        `${inputLabel}.keycode is required`,
-      );
-      assert(
-        Number.isInteger(input.delay) && input.delay >= 0,
-        `${inputLabel}.delay is invalid`,
-      );
-      assert(
-        [0, 1, 2].includes(input.actionType),
-        `${inputLabel}.actionType must be 0, 1, or 2`,
-      );
-    });
+    action.keyInputs.forEach((input, inputIndex) =>
+      validateKeyInput(input, `${label}.keyInputs[${inputIndex}]`),
+    );
+  });
+
+  return ids;
+}
+
+function validateMultiActions(multiActions) {
+  assert(Array.isArray(multiActions), "layerPack.multiActions must be an array");
+  const ids = new Set();
+
+  multiActions.forEach((multiAction, index) => {
+    const label = `layerPack.multiActions[${index}]`;
+    assert(
+      multiAction && typeof multiAction === "object",
+      `${label} must be an object`,
+    );
+    assert(
+      Number.isInteger(multiAction.id) && multiAction.id >= 0,
+      `${label}.id must be a non-negative integer`,
+    );
+    assert(!ids.has(multiAction.id), `${label}.id must be unique`);
+    ids.add(multiAction.id);
+    assert(
+      typeof multiAction.name === "string" && multiAction.name.trim(),
+      `${label}.name is required`,
+    );
+    assert(
+      Number.isInteger(multiAction.tappingTerms) &&
+        multiAction.tappingTerms >= 100 &&
+        multiAction.tappingTerms <= 1000,
+      `${label}.tappingTerms must be between 100 and 1000 milliseconds`,
+    );
+    for (const inputName of MULTI_ACTION_INPUTS) {
+      validateKeyInput(multiAction[inputName], `${label}.${inputName}`);
+    }
   });
 
   return ids;
@@ -180,10 +217,16 @@ export function validateLayerPack(layerPack) {
   validateLayer(layerPack.layer, "layerPack.layer");
 
   const actionIds = validateActions(layerPack.actions ?? []);
+  const multiActionIds = validateMultiActions(layerPack.multiActions ?? []);
   const referencedKeycodes = [
     ...layerKeycodes(layerPack.layer),
     ...(layerPack.actions ?? []).flatMap((action) =>
       action.keyInputs.map((input) => input.keycode),
+    ),
+    ...(layerPack.multiActions ?? []).flatMap((multiAction) =>
+      MULTI_ACTION_INPUTS.map(
+        (inputName) => multiAction[inputName].keycode,
+      ),
     ),
   ];
   for (const keycode of referencedKeycodes) {
@@ -191,11 +234,22 @@ export function validateLayerPack(layerPack) {
       !DEVICE_ACTION_REF.test(keycode),
       `Portable layer packs must use KA_<id>, not ${keycode}`,
     );
+    assert(
+      !DEVICE_MULTI_ACTION_REF.test(keycode),
+      `Portable layer packs must use KM_<id>, not ${keycode}`,
+    );
     const match = PORTABLE_ACTION_REF.exec(keycode);
     if (match) {
       assert(
         actionIds.has(Number(match[1])),
         `Layer pack references missing action ${keycode}`,
+      );
+    }
+    const multiActionMatch = PORTABLE_MULTI_ACTION_REF.exec(keycode);
+    if (multiActionMatch) {
+      assert(
+        multiActionIds.has(Number(multiActionMatch[1])),
+        `Layer pack references missing multiaction ${keycode}`,
       );
     }
   }
@@ -254,20 +308,37 @@ function nextId(items) {
   return items.reduce((highest, item) => Math.max(highest, item.id), -1) + 1;
 }
 
-function installActions(keymap, layerPack, profile) {
+function installPackAssets(keymap, layerPack, profile) {
   const sourceActions = layerPack.actions ?? [];
-  if (sourceActions.length === 0) return clone(layerPack.layer);
+  const sourceMultiActions = layerPack.multiActions ?? [];
+  if (sourceActions.length === 0 && sourceMultiActions.length === 0) {
+    return clone(layerPack.layer);
+  }
 
   keymap.macros ??= [];
   keymap.macrosGroups ??= [];
+  keymap.multiActions ??= [];
+  keymap.multiActionsGroups ??= [];
 
   const firstActionId = nextId(keymap.macros);
   const idMap = new Map(
     sourceActions.map((action, index) => [action.id, firstActionId + index]),
   );
-  const mapActionRef = (keycode) => {
-    const match = PORTABLE_ACTION_REF.exec(keycode);
-    return match ? `KA_A${idMap.get(Number(match[1]))}` : keycode;
+  const firstMultiActionId = nextId(keymap.multiActions);
+  const multiActionIdMap = new Map(
+    sourceMultiActions.map((multiAction, index) => [
+      multiAction.id,
+      firstMultiActionId + index,
+    ]),
+  );
+  const mapPortableRef = (keycode) => {
+    const actionMatch = PORTABLE_ACTION_REF.exec(keycode);
+    if (actionMatch) return `KA_A${idMap.get(Number(actionMatch[1]))}`;
+    const multiActionMatch = PORTABLE_MULTI_ACTION_REF.exec(keycode);
+    if (multiActionMatch) {
+      return `KA_M${multiActionIdMap.get(Number(multiActionMatch[1]))}`;
+    }
+    return keycode;
   };
 
   const installedActions = sourceActions.map((action) => ({
@@ -276,26 +347,58 @@ function installActions(keymap, layerPack, profile) {
     color: action.color ?? null,
     icon: action.icon ?? null,
     actions: action.keyInputs.map((input) => ({
-      kc: mapActionRef(input.keycode),
+      kc: mapPortableRef(input.keycode),
       delay: input.delay,
       act: input.actionType,
     })),
   }));
   const installedIds = installedActions.map((action) => action.id);
+  const installedMultiActions = sourceMultiActions.map((multiAction) => ({
+    id: multiActionIdMap.get(multiAction.id),
+    name: multiAction.name,
+    color: multiAction.color ?? null,
+    icon: multiAction.icon ?? null,
+    kcOnTap: mapPortableRef(multiAction.tap.keycode),
+    kcOnHold: mapPortableRef(multiAction.onHold.keycode),
+    kcOnDoubleTap: mapPortableRef(multiAction.doubleTap.keycode),
+    kcOnTapHold: mapPortableRef(multiAction.tapHold.keycode),
+    tt: multiAction.tappingTerms,
+  }));
+  const installedMultiActionIds = installedMultiActions.map(
+    (multiAction) => multiAction.id,
+  );
 
   keymap.macros.push(...installedActions);
-  keymap.macrosGroups.push({
-    id: nextId(keymap.macrosGroups),
-    name: layerPack.name,
-    tags: ["claude", "codex-micro"],
-    color: layerPack.actionGroupColor ?? "#D97757",
-    actionIds: installedIds,
-  });
+  if (installedIds.length > 0) {
+    keymap.macrosGroups.push({
+      id: nextId(keymap.macrosGroups),
+      name: layerPack.name,
+      tags: ["claude", "codex-micro"],
+      color: layerPack.actionGroupColor ?? "#D97757",
+      actionIds: installedIds,
+    });
+  }
+  keymap.multiActions.push(...installedMultiActions);
+  if (installedMultiActionIds.length > 0) {
+    keymap.multiActionsGroups.push({
+      id: nextId(keymap.multiActionsGroups),
+      name: layerPack.name,
+      tags: ["claude", "codex-micro", "double-tap"],
+      color: layerPack.actionGroupColor ?? "#D97757",
+      actionIds: installedMultiActionIds,
+    });
+  }
   profile.macrosUsed = [
     ...new Set([...(profile.macrosUsed ?? []), ...installedIds]),
   ].sort((a, b) => a - b);
+  profile.multiActionsUsed = [
+    ...new Set([
+      ...(profile.multiActionsUsed ?? []),
+      ...installedMultiActionIds,
+    ]),
+  ].sort((a, b) => a - b);
 
-  return mapLayerKeycodes(layerPack.layer, mapActionRef);
+  return mapLayerKeycodes(layerPack.layer, mapPortableRef);
 }
 
 export function applyLayerPack(
@@ -322,7 +425,7 @@ export function applyLayerPack(
   }
 
   targetProfile.layers[targetIndex] = {
-    ...installActions(updatedKeymap, layerPack, targetProfile),
+    ...installPackAssets(updatedKeymap, layerPack, targetProfile),
     id: targetIndex,
   };
 
@@ -388,43 +491,102 @@ export function createLayerPackFromKeymap(
   const layer = profile.layers[layerNumber - 1];
   assert(layer, `Layer ${layerNumber} was not found in profile ${profileId}`);
 
-  const referencedIds = new Set();
-  const collectDeviceAction = (keycode) => {
-    const match = DEVICE_ACTION_REF.exec(keycode);
-    if (match) referencedIds.add(Number(match[1]));
-  };
-  layerKeycodes(layer).forEach(collectDeviceAction);
-
   const macrosById = new Map(
     (keymap.macros ?? []).map((macro) => [macro.id, macro]),
   );
-  const pending = [...referencedIds];
-  for (let index = 0; index < pending.length; index += 1) {
-    const macro = macrosById.get(pending[index]);
-    assert(
-      macro,
-      `Layer ${layerNumber} references missing action KA_A${pending[index]}`,
-    );
-    for (const input of macro.actions ?? []) {
-      const match = DEVICE_ACTION_REF.exec(input.kc);
-      if (match && !referencedIds.has(Number(match[1]))) {
-        referencedIds.add(Number(match[1]));
-        pending.push(Number(match[1]));
+  const multiActionsById = new Map(
+    (keymap.multiActions ?? []).map((multiAction) => [
+      multiAction.id,
+      multiAction,
+    ]),
+  );
+  const referencedActionIds = new Set();
+  const referencedMultiActionIds = new Set();
+  const pendingActionIds = [];
+  const pendingMultiActionIds = [];
+  const collectDeviceRef = (keycode) => {
+    const actionMatch = DEVICE_ACTION_REF.exec(keycode);
+    if (actionMatch) {
+      const id = Number(actionMatch[1]);
+      if (!referencedActionIds.has(id)) {
+        referencedActionIds.add(id);
+        pendingActionIds.push(id);
+      }
+    }
+    const multiActionMatch = DEVICE_MULTI_ACTION_REF.exec(keycode);
+    if (multiActionMatch) {
+      const id = Number(multiActionMatch[1]);
+      if (!referencedMultiActionIds.has(id)) {
+        referencedMultiActionIds.add(id);
+        pendingMultiActionIds.push(id);
+      }
+    }
+  };
+  layerKeycodes(layer).forEach(collectDeviceRef);
+
+  let actionIndex = 0;
+  let multiActionIndex = 0;
+  while (
+    actionIndex < pendingActionIds.length ||
+    multiActionIndex < pendingMultiActionIds.length
+  ) {
+    if (multiActionIndex < pendingMultiActionIds.length) {
+      const id = pendingMultiActionIds[multiActionIndex];
+      multiActionIndex += 1;
+      const multiAction = multiActionsById.get(id);
+      assert(
+        multiAction,
+        `Layer ${layerNumber} references missing multiaction KA_M${id}`,
+      );
+      for (const key of [
+        "kcOnTap",
+        "kcOnHold",
+        "kcOnDoubleTap",
+        "kcOnTapHold",
+      ]) {
+        collectDeviceRef(multiAction[key]);
+      }
+    }
+
+    if (actionIndex < pendingActionIds.length) {
+      const id = pendingActionIds[actionIndex];
+      actionIndex += 1;
+      const macro = macrosById.get(id);
+      assert(
+        macro,
+        `Layer ${layerNumber} references missing action KA_A${id}`,
+      );
+      for (const input of macro.actions ?? []) {
+        collectDeviceRef(input.kc);
       }
     }
   }
 
-  const idMap = new Map(
-    [...referencedIds].sort((a, b) => a - b).map((id, index) => [id, index]),
+  const actionIdMap = new Map(
+    [...referencedActionIds]
+      .sort((a, b) => a - b)
+      .map((id, index) => [id, index]),
   );
-  const mapDeviceActionRef = (keycode) => {
-    const match = DEVICE_ACTION_REF.exec(keycode);
-    return match ? `KA_${idMap.get(Number(match[1]))}` : keycode;
+  const multiActionIdMap = new Map(
+    [...referencedMultiActionIds]
+      .sort((a, b) => a - b)
+      .map((id, index) => [id, index]),
+  );
+  const mapDeviceRef = (keycode) => {
+    const actionMatch = DEVICE_ACTION_REF.exec(keycode);
+    if (actionMatch) {
+      return `KA_${actionIdMap.get(Number(actionMatch[1]))}`;
+    }
+    const multiActionMatch = DEVICE_MULTI_ACTION_REF.exec(keycode);
+    if (multiActionMatch) {
+      return `KM_${multiActionIdMap.get(Number(multiActionMatch[1]))}`;
+    }
+    return keycode;
   };
-  const portableLayer = mapLayerKeycodes(layer, mapDeviceActionRef);
+  const portableLayer = mapLayerKeycodes(layer, mapDeviceRef);
   delete portableLayer.id;
 
-  const actions = [...idMap].map(([deviceId, portableId]) => {
+  const actions = [...actionIdMap].map(([deviceId, portableId]) => {
     const macro = macrosById.get(deviceId);
     return {
       id: portableId,
@@ -432,12 +594,33 @@ export function createLayerPackFromKeymap(
       color: macro.color ?? null,
       icon: macro.icon ?? null,
       keyInputs: (macro.actions ?? []).map((input) => ({
-        keycode: mapDeviceActionRef(input.kc),
+        keycode: mapDeviceRef(input.kc),
         delay: input.delay,
         actionType: input.act,
       })),
     };
   });
+  const multiActions = [...multiActionIdMap].map(
+    ([deviceId, portableId]) => {
+      const multiAction = multiActionsById.get(deviceId);
+      const portableInput = (keycode) => ({
+        keycode: mapDeviceRef(keycode),
+        delay: 0,
+        actionType: 1,
+      });
+      return {
+        id: portableId,
+        name: multiAction.name,
+        color: multiAction.color ?? null,
+        icon: multiAction.icon ?? null,
+        tap: portableInput(multiAction.kcOnTap),
+        onHold: portableInput(multiAction.kcOnHold),
+        doubleTap: portableInput(multiAction.kcOnDoubleTap),
+        tapHold: portableInput(multiAction.kcOnTapHold),
+        tappingTerms: multiAction.tt,
+      };
+    },
+  );
 
   return {
     formatVersion: 1,
@@ -446,6 +629,7 @@ export function createLayerPackFromKeymap(
     description: `Exported from Input profile ${profileId}, layer ${layerNumber}.`,
     layer: portableLayer,
     actions,
+    multiActions,
   };
 }
 

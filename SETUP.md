@@ -9,6 +9,7 @@ modified.
 You need:
 
 - A Mac with Node.js 20 or newer
+- Xcode Command Line Tools, including `/usr/bin/swiftc`
 - Work Louder Input installed in `/Applications/input.app`
 - A Codex Micro that has connected to Input at least once
 - Claude Desktop for macOS
@@ -18,6 +19,11 @@ The verified combination is Work Louder Input 0.17.2, Codex Micro firmware
 
 The illuminated Bluetooth controls select Bluetooth channels. They do not
 select keyboard layers, so do not press them during setup.
+
+Work Louder's official hardware overview is the
+[Creator Micro 2 product guide](https://worklouder.cc/creator-micro-2). A
+separate Codex Micro PDF manual was not listed on Work Louder's site when this
+guide was updated, so this document covers the Claude-specific installation.
 
 ## 1. Download the project
 
@@ -48,7 +54,24 @@ npm run validate
 
 Both commands must finish successfully before continuing.
 
-## 3. Confirm the keyboard connection
+## 3. Install the Claude focus helper
+
+Run:
+
+```sh
+node ./bin/claude-micro-layer.mjs focus-helper install
+```
+
+This compiles a small native helper, installs it in your user Application
+Support directory, and starts it automatically at login. It listens only for
+`Control-Option-Command-C`. When that shortcut arrives, it brings the existing
+Claude window to the front or launches Claude if it is closed. It does not read
+keystrokes, conversation contents, or Claude data.
+
+You can test the helper immediately by placing another app in front and pressing
+`Control-Option-Command-C` once.
+
+## 4. Confirm the keyboard connection
 
 1. Open Work Louder Input.
 2. Wake the Codex Micro with a normal key or the dial.
@@ -58,7 +81,7 @@ Both commands must finish successfully before continuing.
 Input must be closed during the remaining commands. The sync command will
 reopen it when finished.
 
-## 4. Find the Input keymap
+## 5. Find the Input keymap
 
 Run:
 
@@ -69,7 +92,7 @@ node ./bin/claude-micro-layer.mjs detect
 Normally, one path is printed. If more than one keymap appears, pass the
 correct path to later commands with `--keymap "/full/path/to/keymap.json"`.
 
-## 5. Perform a dry run
+## 6. Perform a dry run
 
 The dry run checks the layer pack and confirms that Layer 1 will not be
 modified:
@@ -83,7 +106,7 @@ node ./bin/claude-micro-layer.mjs install \
 
 Continue only when the command reports `Dry run passed`.
 
-## 6. Install the Layer 2 configuration
+## 7. Install the Layer 2 configuration
 
 Run:
 
@@ -102,7 +125,7 @@ The installer:
 
 Keep the printed backup path until the keyboard has been tested.
 
-## 7. Sync the configuration to the keyboard
+## 8. Sync the configuration to the keyboard
 
 Make sure Input is still closed, then run:
 
@@ -126,7 +149,7 @@ Work Louder Input has been reopened normally.
 The checksum will differ when the keymap contents differ. The important part
 is that the command reports a verified checksum and exits successfully.
 
-## 8. Confirm Layer 2 in Input
+## 9. Confirm Layer 2 in Input
 
 1. Wait for Input to show **Codex Micro**.
 2. Open the **Keymap** tab.
@@ -136,7 +159,7 @@ is that the command reports a verified checksum and exits successfully.
    select an icon to see action names such as **New Conversation**, **Open
    File**, **Undo**, and **Redo**.
 
-## 9. Test the Claude controls
+## 10. Test the Claude controls
 
 Bring Claude Desktop to the front, select Layer 2 in Input, and test one control
 at a time:
@@ -151,6 +174,13 @@ at a time:
 
 New Conversation opens a new Claude conversation, so use it only when you are
 ready to leave the current one.
+
+The top-left key has two gestures:
+
+- Single tap: New Conversation
+- Double tap within 250 ms: bring Claude to the front
+
+The single-tap action waits briefly for the 250 ms double-tap window to expire.
 
 ## Switching layers
 
@@ -209,3 +239,15 @@ Pass the application path explicitly:
 node ./bin/claude-micro-layer.mjs sync \
   --input-app "/full/path/to/input.app"
 ```
+
+### Double tap does not bring Claude forward
+
+First press `Control-Option-Command-C` on the Mac keyboard. If Claude does not
+come forward, reinstall and restart the helper:
+
+```sh
+node ./bin/claude-micro-layer.mjs focus-helper install
+```
+
+If the keyboard shortcut works but the double tap does not, reinstall the layer,
+sync it again, and make sure both taps occur within 250 ms.

@@ -2,6 +2,7 @@
 
 import { resolve } from "node:path";
 
+import { installFocusHelper } from "../src/focus-helper.mjs";
 import {
   detectKeymaps,
   exportLayer,
@@ -20,6 +21,7 @@ Usage:
   claude-micro-layer install <layer-file> --layer <2-6> [--profile <id>] [--keymap <path>] [--dry-run]
   claude-micro-layer sync [--keymap <path>] [--input-app <path>]
   claude-micro-layer export --layer <2-6> --output <path> [--profile <id>] [--keymap <path>]
+  claude-micro-layer focus-helper install
 
 Input should be closed before install or sync. Install creates a timestamped
 backup; sync writes the verified keymap to the keyboard and reopens Input.`);
@@ -156,6 +158,16 @@ async function main() {
       profileId: options.profileId ?? 0,
     });
     console.log(`Exported ${result.layerName} to ${result.outputPath}`);
+    return;
+  }
+
+  if (command === "focus-helper") {
+    if (positionals.length !== 1 || positionals[0] !== "install") {
+      throw new Error("focus-helper requires the install subcommand");
+    }
+    const result = await installFocusHelper();
+    console.log(`Installed Claude focus helper: ${result.executablePath}`);
+    console.log("Double-tap focus shortcut: Control-Option-Command-C");
     return;
   }
 

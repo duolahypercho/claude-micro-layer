@@ -24,6 +24,7 @@ layers 2–6, and exported again after customization.
 ## Requirements
 
 - Node.js 20 or newer
+- Xcode Command Line Tools (`swiftc`) for the optional macOS focus helper
 - Work Louder Input with a Codex Micro detected at least once
 - macOS for hardware sync; Windows and Linux keymap detection still need
   community verification
@@ -38,6 +39,13 @@ Clone the repository and verify the included layer:
 ```sh
 npm test
 npm run validate
+```
+
+Install the background helper that focuses Claude when the top-left key is
+double-tapped:
+
+```sh
+node ./bin/claude-micro-layer.mjs focus-helper install
 ```
 
 Find the Input keymap on your computer:
@@ -101,6 +109,11 @@ editing, while the keyboard preview uses the icons.
 | Bottom three keys   | Escape, Tab, Enter                             |
 | Dial                | Zoom out, zoom in, actual size                 |
 
+The top-left key is a native Input multiaction. A single tap runs New
+Conversation; a double tap within 250 ms sends a private global shortcut to the
+included macOS helper, which brings Claude to the front or launches it. Claude
+continues working normally while it is in the background.
+
 The Claude commands were checked against the installed Claude Desktop macOS
 application. General editing commands continue to work in other applications,
 so switch to this layer only when you want these controls.
@@ -113,6 +126,10 @@ the correct ID based on `--layer`. Optional `actions` use Input's readable actio
 shape (`keyInputs` with `keycode`, `delay`, and `actionType`). Portable layer
 references use `KA_<id>`; installation converts them to Input's device-side
 `KA_A<id>` references after resolving collisions.
+
+Optional `multiActions` use Input's tap, hold, double-tap, and tap-hold fields.
+Portable multiaction references use `KM_<id>` and are installed as device-side
+`KA_M<id>` references.
 
 Action icons use Input's bundled SVG-library codes, such as
 `icon-folder-open-fas`. Keeping the library code in the JSON instead of copying
@@ -128,6 +145,13 @@ The initial implementation was verified against:
 - Claude Desktop for macOS `1.24012.1`
 
 Always run `--dry-run` after upgrading Input or device firmware.
+
+A separate Codex Micro PDF manual was not listed on Work Louder's site when
+this guide was updated. Its official
+[Creator Micro 2 product guide](https://worklouder.cc/creator-micro-2) documents
+the hardware, six layers, Input integration, dial, joystick, and Codex
+controls. This repository's [setup guide](./SETUP.md) is the practical manual
+for the Claude Layer 2 configuration.
 
 ## Contributing
 

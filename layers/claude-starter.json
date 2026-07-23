@@ -180,6 +180,34 @@
       "keyInputs": [
         { "keycode": "KC_ENTER", "delay": 0, "actionType": 2 }
       ]
+    },
+    {
+      "id": 16,
+      "name": "Focus Claude",
+      "color": null,
+      "icon": "icon-window-restore-fas",
+      "keyInputs": [
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
+        { "keycode": "KC_C", "delay": 0, "actionType": 2 },
+        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
+        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+      ]
+    }
+  ],
+  "multiActions": [
+    {
+      "id": 0,
+      "name": "New Conversation / Focus Claude",
+      "color": null,
+      "icon": "icon-message-fas",
+      "tap": { "keycode": "KA_0", "delay": 0, "actionType": 1 },
+      "onHold": { "keycode": "KC_NONE", "delay": 0, "actionType": 1 },
+      "doubleTap": { "keycode": "KA_16", "delay": 0, "actionType": 1 },
+      "tapHold": { "keycode": "KC_NONE", "delay": 0, "actionType": 1 },
+      "tappingTerms": 250
     }
   ],
   "layer": {
@@ -187,7 +215,7 @@
     "color": 14251863,
     "layout": {
       "keymap": [
-        ["KA_0", "KA_1"],
+        ["KM_0", "KA_1"],
         ["KA_2", "KA_3", "KA_4", "KA_5"],
         ["KA_6", "KA_7", "KA_8", "KA_9"],
         ["KA_13", "KA_14", "KA_15"]
