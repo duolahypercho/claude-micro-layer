@@ -252,12 +252,27 @@ func recentTaskButtons(in application: NSRunningApplication) -> [AXUIElement] {
     }
 }
 
-// Claude has no keyboard shortcut for selecting recents, so press the
-// sidebar button directly; this also works with Claude in the background.
+private let digitKeyCodes: [CGKeyCode] = [
+    CGKeyCode(kVK_ANSI_1),
+    CGKeyCode(kVK_ANSI_2),
+    CGKeyCode(kVK_ANSI_3),
+    CGKeyCode(kVK_ANSI_4),
+    CGKeyCode(kVK_ANSI_5),
+    CGKeyCode(kVK_ANSI_6),
+]
+
+// Prefer pressing the sidebar entry, which works with Claude in the
+// background. When the chat list is not exposed — collapsed sidebar, or a
+// view without it — fall back to Claude's own Command-digit shortcut, which
+// only reaches Claude while it is frontmost.
 private func pressRecentTask(_ index: Int, in application: NSRunningApplication) {
     let recentTasks = recentTaskButtons(in: application)
-    guard recentTasks.indices.contains(index) else { return }
-    _ = pressElement(recentTasks[index])
+    if recentTasks.indices.contains(index) {
+        _ = pressElement(recentTasks[index])
+        return
+    }
+    guard digitKeyCodes.indices.contains(index) else { return }
+    sendKey(digitKeyCodes[index], flags: .maskCommand, to: application)
 }
 
 // MARK: - Recent task status polling for the lights engine
