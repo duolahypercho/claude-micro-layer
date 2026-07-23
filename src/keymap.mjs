@@ -424,10 +424,16 @@ export function applyLayerPack(
     targetProfile.layers.push(blankLayer(targetProfile.layers.length));
   }
 
+  const existingLinkedAppId = targetProfile.layers[targetIndex]?.linkedAppId;
   targetProfile.layers[targetIndex] = {
     ...installPackAssets(updatedKeymap, layerPack, targetProfile),
     id: targetIndex,
   };
+  // App links are configured per machine in Input, not carried by layer
+  // packs; keep an existing link when the layer is reinstalled.
+  if (existingLinkedAppId !== undefined) {
+    targetProfile.layers[targetIndex].linkedAppId = existingLinkedAppId;
+  }
 
   assert(
     JSON.stringify(targetProfile.layers[0]) === protectedLayer,

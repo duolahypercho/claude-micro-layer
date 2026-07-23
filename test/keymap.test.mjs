@@ -288,3 +288,16 @@ test("hardware sync accepts only the exact device checksum", () => {
     /Device checksum mismatch/,
   );
 });
+
+test("reinstalling a layer keeps its Input app link", async () => {
+  const keymap = fixtureKeymap();
+  const layerPack = await loadJson(exampleLayerPath);
+  const first = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
+  first.linkedApps = [{ id: 3, name: "Claude", path: "/Applications/Claude.app" }];
+  first.profiles[0].layers[1].linkedAppId = 3;
+
+  const updated = applyLayerPack(first, layerPack, { layerNumber: 2 });
+
+  assert.equal(updated.profiles[0].layers[1].linkedAppId, 3);
+  assert.deepEqual(updated.linkedApps, first.linkedApps);
+});
