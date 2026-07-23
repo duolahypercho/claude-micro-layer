@@ -231,6 +231,13 @@ to a minute or two to repaint; while you are actively using it, lights update
 within a few seconds. When the keyboard has fully disconnected, press any key
 to wake it.
 
+The statuses come from Claude's sidebar, so **keep the sidebar expanded**
+(Cmd+B toggles it). With the sidebar collapsed the chat list is not exposed
+to accessibility: the lights go dark and the task keys have nothing to
+select. The helper log
+(`~/Library/Application Support/ClaudeMicroLayer/claude-micro-focus.log`)
+says so explicitly when this is the case.
+
 ## Switching layers
 
 The current release installs and syncs Layer 2, but it does not add a physical

@@ -501,6 +501,9 @@ final class LightsEngine {
         let statuses = statusProvider()
         let desired: [SlotLighting]
         if let statuses {
+            if statuses.allSatisfy({ $0 == nil }) {
+                lightsLog("no recent chats visible; open Claude's sidebar (Cmd+B) to light the task keys")
+            }
             desired = slotLighting(forStatuses: statuses, colors: config.colors)
         } else {
             lightsLog("Claude not running or accessibility access missing; keeping lights off")
