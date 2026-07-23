@@ -204,7 +204,9 @@ private func composerTextArea(in application: NSRunningApplication) -> AXUIEleme
 // so focus the message field first; this also works with Claude in the
 // background, where a bare Return would go to the frontmost app instead.
 private func sendMessage(in application: NSRunningApplication) {
-    if let composer = composerTextArea(in: application) {
+    let composer = composerTextArea(in: application)
+    lightsLog("send: composer found = \(composer != nil)")
+    if let composer {
         _ = AXUIElementSetAttributeValue(
             composer,
             kAXFocusedAttribute as CFString,
@@ -240,23 +242,27 @@ private func sendKey(
     keyUp.postToPid(application.processIdentifier)
 }
 
-// Claude's dictation control is a composer checkbox with no keyboard
-// shortcut (verified via the accessibility tree: "Press and hold to
-// record" inside the "Dictation" group), so toggle it directly.
+// Claude's dictation is Command-D, which toggles recording. The voice key is
+// held to talk, so the press starts recording and the matching release sends
+// the same shortcut again to stop it.
+private var voiceRecording = false
+
+private func toggleDictation(in application: NSRunningApplication) {
+    sendKey(CGKeyCode(kVK_ANSI_D), flags: .maskCommand, to: application)
+}
+
 private func activateVoiceControl(in application: NSRunningApplication) {
-    if pressControl(
-        in: application,
-        labels: [
-            "Press and hold to record",
-            "Stop recording",
-            "Dictation",
-            "Start dictation",
-            "Voice input",
-        ]
-    ) {
-        return
-    }
-    _ = pressControl(in: application, labels: ["Start Dictation…"])
+    toggleDictation(in: application)
+    voiceRecording = true
+    lightsLog("dictation started")
+}
+
+func stopVoiceControl() {
+    guard voiceRecording else { return }
+    voiceRecording = false
+    guard let application = runningClaude() else { return }
+    toggleDictation(in: application)
+    lightsLog("dictation stopped")
 }
 
 // Verified against Claude Desktop 1.24012.1: sidebar recents are AXButtons
@@ -302,8 +308,10 @@ private let digitKeyCodes: [CGKeyCode] = [
 // only reaches Claude while it is frontmost.
 private func pressRecentTask(_ index: Int, in application: NSRunningApplication) {
     let recentTasks = recentTaskButtons(in: application)
+    lightsLog("recent task \(index + 1): \(recentTasks.count) chats visible")
     if recentTasks.indices.contains(index) {
-        _ = pressElement(recentTasks[index])
+        let pressed = pressElement(recentTasks[index])
+        lightsLog("pressed chat \(index + 1): \(pressed)")
         return
     }
     guard digitKeyCodes.indices.contains(index) else { return }
@@ -410,11 +418,15 @@ private func toggleFastMode(in application: NSRunningApplication) {
 }
 
 private func handleClaudeCommand(_ command: ClaudeCommand) {
+    lightsLog("hotkey received: \(command)")
     if command == .focus {
         activateClaude()
         return
     }
-    guard hasAccessibilityPermission() else { return }
+    guard hasAccessibilityPermission() else {
+        lightsLog("no accessibility access; cannot drive Claude")
+        return
+    }
 
     openClaude(activate: false) { application in
         guard let application else { return }
@@ -476,10 +488,36 @@ private let hotKeyHandler: EventHandlerUPP = { _, event, _ in
     else {
         return OSStatus(eventNotHandledErr)
     }
+
+    // Dictation is push-to-talk: the voice key starts recording when held and
+    // stops when let go. Every other command acts on press only.
+    let isRelease = GetEventKind(event) == UInt32(kEventHotKeyReleased)
+    if isRelease && command != .voice {
+        return noErr
+    }
     DispatchQueue.main.async {
-        handleClaudeCommand(command)
+        if isRelease {
+            stopVoiceControl()
+        } else {
+            handleClaudeCommand(command)
+        }
     }
     return noErr
+}
+
+// Diagnostic only: reports that the keyboard's private Control-Option-Command
+// combos are reaching macOS even when hotkey delivery fails. Events without
+// that exact modifier signature are ignored and never recorded, so ordinary
+// typing is not observed.
+private var combinationMonitor: Any?
+
+private func startCombinationMonitor() {
+    let signature: NSEvent.ModifierFlags = [.control, .option, .command]
+    combinationMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        guard flags.isSuperset(of: signature) else { return }
+        lightsLog("saw private combo: keyCode \(event.keyCode)")
+    }
 }
 
 private var shutdownSignalSources: [DispatchSourceSignal] = []
@@ -524,16 +562,22 @@ enum ClaudeMicroFocusApp {
 
         NSApplication.shared.setActivationPolicy(.prohibited)
 
-        var eventType = EventTypeSpec(
-            eventClass: OSType(kEventClassKeyboard),
-            eventKind: UInt32(kEventHotKeyPressed)
-        )
+        var eventTypes = [
+            EventTypeSpec(
+                eventClass: OSType(kEventClassKeyboard),
+                eventKind: UInt32(kEventHotKeyPressed)
+            ),
+            EventTypeSpec(
+                eventClass: OSType(kEventClassKeyboard),
+                eventKind: UInt32(kEventHotKeyReleased)
+            ),
+        ]
         var eventHandlerReference: EventHandlerRef?
         let installStatus = InstallEventHandler(
             GetApplicationEventTarget(),
             hotKeyHandler,
-            1,
-            &eventType,
+            eventTypes.count,
+            &eventTypes,
             nil,
             &eventHandlerReference
         )
@@ -574,6 +618,7 @@ enum ClaudeMicroFocusApp {
             handleClaudeCommand(recentCommands[slot])
         }
         lightsEngine.start()
+        startCombinationMonitor()
         installShutdownHandlers(for: lightsEngine)
 
         NSApplication.shared.run()

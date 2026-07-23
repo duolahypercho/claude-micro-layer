@@ -313,9 +313,11 @@ final class MicroHIDClient {
 
         // Device-initiated notifications carry a method but no id.
         let notificationMethod = (root["method"] as? String) ?? (root["m"] as? String)
-        if notificationMethod == "v.oai.hid", root["id"] == nil, root["i"] == nil {
-            let params = root["params"] as? [String: Any]
-            if let key = params?["k"] as? String {
+        if root["id"] == nil, root["i"] == nil, notificationMethod != nil {
+            lightsLog("device notification: \(line.prefix(120))")
+            let params = (root["params"] as? [String: Any])
+                ?? (root["p"] as? [String: Any])
+            if let key = (params?["k"] as? String) ?? (params?["key"] as? String) {
                 onTaskKeyEvent?(key)
             }
             return
@@ -518,10 +520,6 @@ final class LightsEngine {
             return
         }
 
-        guard config.claudeLayerIndex >= 0 else {
-            apply(desired, using: client)
-            return
-        }
         client.call(method: "device.status", params: nil) { [weak self] response in
             guard let self else { return }
             guard
@@ -533,11 +531,10 @@ final class LightsEngine {
                 return
             }
             self.lastLayerCheck = Date()
-            if layer != config.claudeLayerIndex {
-                lightsLog("layer \(layer + 1) active; Claude lights pause until layer \(config.claudeLayerIndex + 1) is selected")
-            }
-            let slots = layer == config.claudeLayerIndex ? desired : allSlotsOff()
-            self.apply(slots, using: client)
+            let profile = (result["profile_index"] as? NSNumber)?.intValue ?? -1
+            lightsLog("keyboard is on profile \(profile + 1), layer \(layer + 1)")
+            let gated = config.claudeLayerIndex >= 0 && layer != config.claudeLayerIndex
+            self.apply(gated ? allSlotsOff() : desired, using: client)
         }
     }
 

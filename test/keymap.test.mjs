@@ -123,18 +123,11 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     ["Voice Input Left", "Voice Input Right", "Send Message"],
   );
   assert.deepEqual(
-    updated.macros.slice(13, 15).map((macro) => macro.actions),
-    Array.from({ length: 2 }, () => [
-      { kc: "KC_LGUI", delay: 0, act: 1 },
-      { kc: "KC_D", delay: 0, act: 1 },
-      { kc: "KC_D", delay: 0, act: 0 },
-      { kc: "KC_LGUI", delay: 0, act: 0 },
-    ]),
-    "voice keys hold Command across an explicit D press and release",
-  );
-  assert.equal(
-    updated.macros[15].actions.find((input) => input.act === 2).kc,
-    "KC_ENTER",
+    updated.macros
+      .slice(13, 16)
+      .map((macro) => macro.actions.find((input) => input.act === 2).kc),
+    ["KC_V", "KC_V", "KC_ENT"],
+    "voice runs through the helper; send uses Input's KC_ENT keycode",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
