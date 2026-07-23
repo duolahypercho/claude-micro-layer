@@ -401,6 +401,108 @@ function installPackAssets(keymap, layerPack, profile) {
   return mapLayerKeycodes(layerPack.layer, mapPortableRef);
 }
 
+const PACK_GROUP_TAGS = ["claude", "codex-micro"];
+
+function collectReferencedAssetIds(keymap) {
+  const actionIds = new Set();
+  const multiActionIds = new Set();
+  const scan = (keycode) => {
+    const actionMatch = DEVICE_ACTION_REF.exec(keycode);
+    if (actionMatch) actionIds.add(Number(actionMatch[1]));
+    const multiActionMatch = DEVICE_MULTI_ACTION_REF.exec(keycode);
+    if (multiActionMatch) multiActionIds.add(Number(multiActionMatch[1]));
+  };
+
+  for (const profile of keymap.profiles) {
+    for (const layer of profile.layers) {
+      layerKeycodes(layer).forEach(scan);
+    }
+  }
+  for (const multiAction of keymap.multiActions ?? []) {
+    if (!multiActionIds.has(multiAction.id)) continue;
+    for (const key of ["kcOnTap", "kcOnHold", "kcOnDoubleTap", "kcOnTapHold"]) {
+      scan(multiAction[key]);
+    }
+  }
+  for (const macro of keymap.macros ?? []) {
+    if (!actionIds.has(macro.id)) continue;
+    for (const input of macro.actions ?? []) scan(input.kc);
+  }
+  return { actionIds, multiActionIds };
+}
+
+// Repeated installs used to append a fresh copy of the pack's actions each
+// time, leaving orphaned duplicates in Input's library. Remove pack-tagged
+// assets that no layer references anymore; assets the user created outside
+// this pack's groups are never touched.
+function removeOrphanedPackAssets(keymap) {
+  const { actionIds, multiActionIds } = collectReferencedAssetIds(keymap);
+  const isPackGroup = (group) =>
+    PACK_GROUP_TAGS.every((tag) => group.tags?.includes(tag));
+
+  const packActionIds = new Set(
+    (keymap.macrosGroups ?? [])
+      .filter(isPackGroup)
+      .flatMap((group) => group.actionIds ?? []),
+  );
+  const packMultiActionIds = new Set(
+    (keymap.multiActionsGroups ?? [])
+      .filter(isPackGroup)
+      .flatMap((group) => group.actionIds ?? []),
+  );
+
+  keymap.macros = (keymap.macros ?? []).filter(
+    (macro) => actionIds.has(macro.id) || !packActionIds.has(macro.id),
+  );
+  keymap.multiActions = (keymap.multiActions ?? []).filter(
+    (multiAction) =>
+      multiActionIds.has(multiAction.id) ||
+      !packMultiActionIds.has(multiAction.id),
+  );
+
+  const keptActionIds = new Set(keymap.macros.map((macro) => macro.id));
+  const keptMultiActionIds = new Set(
+    keymap.multiActions.map((multiAction) => multiAction.id),
+  );
+  keymap.macrosGroups = (keymap.macrosGroups ?? [])
+    .map((group) =>
+      isPackGroup(group)
+        ? {
+            ...group,
+            actionIds: (group.actionIds ?? []).filter((id) =>
+              keptActionIds.has(id),
+            ),
+          }
+        : group,
+    )
+    .filter((group) => !isPackGroup(group) || group.actionIds.length > 0);
+  keymap.multiActionsGroups = (keymap.multiActionsGroups ?? [])
+    .map((group) =>
+      isPackGroup(group)
+        ? {
+            ...group,
+            actionIds: (group.actionIds ?? []).filter((id) =>
+              keptMultiActionIds.has(id),
+            ),
+          }
+        : group,
+    )
+    .filter((group) => !isPackGroup(group) || group.actionIds.length > 0);
+
+  for (const profile of keymap.profiles) {
+    if (profile.macrosUsed) {
+      profile.macrosUsed = profile.macrosUsed.filter((id) =>
+        keptActionIds.has(id),
+      );
+    }
+    if (profile.multiActionsUsed) {
+      profile.multiActionsUsed = profile.multiActionsUsed.filter((id) =>
+        keptMultiActionIds.has(id),
+      );
+    }
+  }
+}
+
 export function applyLayerPack(
   keymap,
   layerPack,
@@ -434,6 +536,8 @@ export function applyLayerPack(
   if (existingLinkedAppId !== undefined) {
     targetProfile.layers[targetIndex].linkedAppId = existingLinkedAppId;
   }
+
+  removeOrphanedPackAssets(updatedKeymap);
 
   assert(
     JSON.stringify(targetProfile.layers[0]) === protectedLayer,

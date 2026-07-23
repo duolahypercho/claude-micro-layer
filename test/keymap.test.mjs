@@ -309,3 +309,31 @@ test("reinstalling a layer keeps its Input app link", async () => {
   assert.equal(updated.profiles[0].layers[1].linkedAppId, 3);
   assert.deepEqual(updated.linkedApps, first.linkedApps);
 });
+
+test("reinstalling a pack does not accumulate duplicate actions", async () => {
+  const layerPack = await loadJson(exampleLayerPath);
+  let keymap = applyLayerPack(fixtureKeymap(), layerPack, { layerNumber: 2 });
+  keymap.macros.push({
+    id: 500,
+    name: "User macro",
+    color: null,
+    icon: null,
+    actions: [{ kc: "KC_A", delay: 0, act: 2 }],
+  });
+
+  keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
+  keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
+
+  const packMacros = keymap.macros.filter((m) => m.name !== "User macro");
+  assert.equal(packMacros.length, 17, "old pack generations must be removed");
+  assert.equal(
+    keymap.macros.some((m) => m.name === "User macro"),
+    true,
+    "user macros outside the pack groups must be kept",
+  );
+  assert.equal(keymap.multiActions.length, 1);
+  assert.equal(keymap.macrosGroups.length, 1);
+  assert.equal(keymap.multiActionsGroups.length, 1);
+  const names = new Set(packMacros.map((m) => m.name));
+  assert.equal(names.size, 17, "no duplicate action names");
+});
