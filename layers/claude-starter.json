@@ -13,13 +13,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_1", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_1",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -28,13 +56,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_2", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_2",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -43,13 +99,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_3", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_3",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -58,13 +142,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_4", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_4",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -73,13 +185,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_5", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_5",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -88,13 +228,41 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_6", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_6",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -103,13 +271,41 @@
       "color": null,
       "icon": "icon-bolt-lightning-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_F", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_F",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -118,13 +314,11 @@
       "color": null,
       "icon": "icon-check-double-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_Y", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_Y",
+          "delay": 0,
+          "actionType": 2
+        }
       ]
     },
     {
@@ -133,13 +327,11 @@
       "color": null,
       "icon": "icon-xmark-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_X", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_N",
+          "delay": 0,
+          "actionType": 2
+        }
       ]
     },
     {
@@ -148,13 +340,41 @@
       "color": null,
       "icon": "icon-arrows-turn-to-dots-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_K", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_K",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -163,9 +383,21 @@
       "color": null,
       "icon": "icon-magnifying-glass-minus-fas",
       "keyInputs": [
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_MINS", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_MINS",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -174,9 +406,21 @@
       "color": null,
       "icon": "icon-magnifying-glass-plus-fas",
       "keyInputs": [
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_EQL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_EQL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -185,9 +429,21 @@
       "color": null,
       "icon": "icon-maximize-fas",
       "keyInputs": [
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_0", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_0",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -196,13 +452,21 @@
       "color": null,
       "icon": "icon-microphone-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_V", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_D",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -211,13 +475,21 @@
       "color": null,
       "icon": "icon-microphone-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_V", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_D",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     },
     {
@@ -226,13 +498,11 @@
       "color": null,
       "icon": "icon-paper-plane-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_ENTER", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_ENTER",
+          "delay": 0,
+          "actionType": 2
+        }
       ]
     },
     {
@@ -241,13 +511,41 @@
       "color": null,
       "icon": "icon-window-restore-fas",
       "keyInputs": [
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 1 },
-        { "keycode": "KC_C", "delay": 0, "actionType": 2 },
-        { "keycode": "KC_LGUI", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LALT", "delay": 0, "actionType": 0 },
-        { "keycode": "KC_LCTL", "delay": 0, "actionType": 0 }
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_C",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LALT",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LCTL",
+          "delay": 0,
+          "actionType": 0
+        }
       ]
     }
   ],
@@ -257,10 +555,26 @@
       "name": "Recent Task 1 / Focus Claude",
       "color": null,
       "icon": "icon-message-fas",
-      "tap": { "keycode": "KA_0", "delay": 0, "actionType": 1 },
-      "onHold": { "keycode": "KC_NONE", "delay": 0, "actionType": 1 },
-      "doubleTap": { "keycode": "KA_16", "delay": 0, "actionType": 1 },
-      "tapHold": { "keycode": "KC_NONE", "delay": 0, "actionType": 1 },
+      "tap": {
+        "keycode": "KA_0",
+        "delay": 0,
+        "actionType": 1
+      },
+      "onHold": {
+        "keycode": "KC_NONE",
+        "delay": 0,
+        "actionType": 1
+      },
+      "doubleTap": {
+        "keycode": "KA_16",
+        "delay": 0,
+        "actionType": 1
+      },
+      "tapHold": {
+        "keycode": "KC_NONE",
+        "delay": 0,
+        "actionType": 1
+      },
       "tappingTerms": 250
     }
   ],
@@ -269,12 +583,35 @@
     "color": 14251863,
     "layout": {
       "keymap": [
-        ["KM_0", "KA_1"],
-        ["KA_2", "KA_3", "KA_4", "KA_5"],
-        ["KA_6", "KA_7", "KA_8", "KA_9"],
-        ["KA_13", "KA_14", "KA_15"]
+        [
+          "KM_0",
+          "KA_1"
+        ],
+        [
+          "KA_2",
+          "KA_3",
+          "KA_4",
+          "KA_5"
+        ],
+        [
+          "KA_6",
+          "KA_7",
+          "KA_8",
+          "KA_9"
+        ],
+        [
+          "KA_13",
+          "KA_14",
+          "KA_15"
+        ]
       ],
-      "encoders": [["KA_10", "KA_11", "KA_12"]],
+      "encoders": [
+        [
+          "KA_10",
+          "KA_11",
+          "KA_12"
+        ]
+      ],
       "joystick": {
         "type": "RADIAL",
         "sectors": []
