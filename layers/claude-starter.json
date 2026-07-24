@@ -48,7 +48,22 @@
         "sectors": []
       }
     },
-    "lights": null
+    "lights": {
+      "backlight": {
+        "effect": "off",
+        "brightness": 0,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 14251863
+      },
+      "underglow": {
+        "effect": "solid",
+        "brightness": 0.7,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 14251863
+      }
+    }
   },
   "actions": [
     {
