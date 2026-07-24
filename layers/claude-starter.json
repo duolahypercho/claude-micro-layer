@@ -86,6 +86,11 @@
           "keycode": "KC_ENT",
           "delay": 400,
           "actionType": 2
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 150,
+          "actionType": 2
         }
       ]
     },
@@ -209,6 +214,11 @@
         {
           "keycode": "KC_ENT",
           "delay": 400,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 150,
           "actionType": 2
         }
       ]

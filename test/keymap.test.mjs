@@ -93,7 +93,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT"],
+    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT", "KC_ENT"],
   );
   assert.deepEqual(
     updated.macros.map((macro) => macro.name),
@@ -265,7 +265,7 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT"],
+    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT", "KC_ENT"],
   );
 });
 
