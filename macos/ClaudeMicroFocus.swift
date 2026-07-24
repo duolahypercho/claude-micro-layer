@@ -303,6 +303,32 @@ func recentTaskButtons(in application: NSRunningApplication) -> [AXUIElement] {
         let label = normalized(elementLabel(element))
         return recentStatusPrefixes.contains { label.hasPrefix($0) }
     }
+    // The accessibility tree is walked breadth-first, so its order follows the
+    // view hierarchy rather than the sidebar. Sort by screen position so slot N
+    // is the Nth chat the user actually sees, and the key matches its light.
+    .sorted { first, second in
+        let left = elementOrigin(first)
+        let right = elementOrigin(second)
+        return left.y == right.y ? left.x < right.x : left.y < right.y
+    }
+}
+
+private func elementOrigin(_ element: AXUIElement) -> CGPoint {
+    var value: CFTypeRef?
+    guard
+        AXUIElementCopyAttributeValue(element, kAXPositionAttribute as CFString, &value)
+            == .success,
+        let positionValue = value,
+        CFGetTypeID(positionValue) == AXValueGetTypeID()
+    else {
+        return CGPoint(
+            x: CGFloat.greatestFiniteMagnitude,
+            y: CGFloat.greatestFiniteMagnitude
+        )
+    }
+    var point = CGPoint.zero
+    AXValueGetValue(positionValue as! AXValue, .cgPoint, &point)
+    return point
 }
 
 private let digitKeyCodes: [CGKeyCode] = [
@@ -318,16 +344,25 @@ private let digitKeyCodes: [CGKeyCode] = [
 // background. When the chat list is not exposed — collapsed sidebar, or a
 // view without it — fall back to Claude's own Command-digit shortcut, which
 // only reaches Claude while it is frontmost.
+// Claude switches chats with Command-digit, which is the only route that
+// reliably lands: the status-labelled elements in the sidebar accept an
+// accessibility press and report success without navigating anywhere. The
+// shortcut is delivered to Claude itself, and Claude is brought forward first
+// because opening a chat means the user wants to look at it.
 private func pressRecentTask(_ index: Int, in application: NSRunningApplication) {
-    let recentTasks = recentTaskButtons(in: application)
-    lightsLog("recent task \(index + 1): \(recentTasks.count) chats visible")
-    if recentTasks.indices.contains(index) {
-        let pressed = pressElement(recentTasks[index])
-        lightsLog("pressed chat \(index + 1): \(pressed)")
-        return
-    }
     guard digitKeyCodes.indices.contains(index) else { return }
+    // Posting to the process leaves the frontmost app alone, so switching a
+    // chat never steals focus from whatever the user is doing. Claude is only
+    // brought forward when the shortcut demonstrably did not land, which is how
+    // a background-delivered menu shortcut fails.
+    // Claude has to be frontmost to switch chats. Command-digit is a menu
+    // shortcut, which a background app ignores, and the sidebar rows report a
+    // successful accessibility press without navigating anywhere -- both were
+    // measured against Claude 1.24012.1. Codex Micro switches threads in the
+    // background only because ChatGPT listens to the keyboard itself.
+    application.activate(options: [])
     sendKey(digitKeyCodes[index], flags: .maskCommand, to: application)
+    lightsLog("recent task \(index + 1): sent Command-\(index + 1)")
 }
 
 // MARK: - Recent task status polling for the lights engine
@@ -457,16 +492,13 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             pressRecentTask(index, in: application)
         case .fastMode:
             toggleFastMode(in: application)
+        // Claude answers its own permission prompts from the keyboard:
+        // Command-Return approves, "1" rejects. Driving those beats hunting for
+        // a button whose label changes with the prompt.
         case .confirm:
-            _ = pressControl(
-                in: application,
-                labels: ["Approve", "Confirm", "Allow", "Continue", "Yes"]
-            )
+            sendKey(CGKeyCode(kVK_Return), flags: .maskCommand, to: application)
         case .cancel:
-            _ = pressControl(
-                in: application,
-                labels: ["Reject", "Cancel", "Stop", "Stop response", "Deny"]
-            )
+            sendKey(CGKeyCode(kVK_ANSI_1), to: application)
         case .fork:
             _ = pressControl(
                 in: application,

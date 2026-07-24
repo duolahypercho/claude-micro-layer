@@ -19,7 +19,7 @@ enum SlotEffect: Int {
 struct LightsColors {
     var pass: Int
     var active: Int
-    var error: Int
+    var done: Int
 }
 
 struct LightsConfig {
@@ -34,7 +34,7 @@ struct LightsConfig {
         pollIntervalMs: 2000,
         rpcTimeoutMs: 75000,
         claudeLayerIndex: -1,
-        colors: LightsColors(pass: 0x22C55E, active: 0xF59E0B, error: 0xEF4444)
+        colors: LightsColors(pass: 0x22C55E, active: 0xF59E0B, done: 0xEF4444)
     )
 }
 
@@ -76,7 +76,10 @@ func loadLightsConfig() -> LightsConfig {
     if let colors = root["colors"] as? [String: Any] {
         if let pass = parseColor(colors["pass"]) { config.colors.pass = pass }
         if let active = parseColor(colors["active"]) { config.colors.active = active }
-        if let error = parseColor(colors["error"]) { config.colors.error = error }
+        // "error" is the key older configurations used for the same red.
+        if let done = parseColor(colors["done"]) ?? parseColor(colors["error"]) {
+            config.colors.done = done
+        }
     }
     return config
 }
@@ -101,23 +104,25 @@ func slotLighting(forStatuses statuses: [String?], colors: LightsColors) -> [Slo
     (0..<lightsSlotCount).map { index in
         let status = index < statuses.count ? statuses[index] : nil
         switch status {
-        // Green while a chat is doing work, amber once it is settled or wants
-        // the user, red when it failed. Breathing marks the states that are
-        // still changing, so a glance separates them from the steady ones.
+        // Green while a chat is working, amber when it is blocked on the user,
+        // red once it has finished and the result is unread. An idle chat is
+        // dark: nothing is happening and nothing is owed, so it earns no light.
         case "running", "working":
             return SlotLighting(id: index, color: colors.pass, brightness: 1, effect: .breath, speed: 0.4)
-        case "awaiting approval", "awaiting response", "needs attention", "unread":
+        case "awaiting approval", "awaiting response", "needs attention":
             return SlotLighting(id: index, color: colors.active, brightness: 1, effect: .breath, speed: 0.4)
-        case "idle":
-            return SlotLighting(id: index, color: colors.active, brightness: 1, effect: .solid, speed: 0)
+        case "unread":
+            return SlotLighting(id: index, color: colors.done, brightness: 1, effect: .solid, speed: 0)
         case "error":
-            return SlotLighting(id: index, color: colors.error, brightness: 1, effect: .breath, speed: 0.4)
+            return SlotLighting(id: index, color: colors.done, brightness: 1, effect: .breath, speed: 0.4)
         default:
             return .off(id: index)
         }
     }
 }
 
+// The firmware paints each thread onto its own agent key, so the entries carry
+// no sync flags: "sk" would tint the whole key zone one colour instead.
 private func rpcParams(_ slots: [SlotLighting]) -> [[String: Any]] {
     slots.map { slot in
         [
@@ -320,7 +325,12 @@ final class MicroHIDClient {
             lightsLog("device notification: \(line.prefix(120))")
             let params = (root["params"] as? [String: Any])
                 ?? (root["p"] as? [String: Any])
-            if let key = (params?["k"] as? String) ?? (params?["key"] as? String) {
+            // The device reports both edges of a task key: act 1 is the press,
+            // act 0 the release. Acting on either one fires twice per press, or
+            // once on release when the press lands inside the debounce window.
+            let action = (params?["act"] as? NSNumber)?.intValue
+            if let key = (params?["k"] as? String) ?? (params?["key"] as? String),
+                action == nil || action == 1 {
                 onTaskKeyEvent?(key)
             }
             return
@@ -483,9 +493,11 @@ final class LightsEngine {
                     let slot = Int(key.suffix(1)),
                     (0..<lightsSlotCount).contains(slot)
                 else { return }
-                let now = Date()
-                guard now.timeIntervalSince(self.lastTaskKeyEvent) > 0.3 else { return }
-                self.lastTaskKeyEvent = now
+                // No time-based debounce: the parser already drops the release
+                // edge, so every event here is a real press. A window wide
+                // enough to cover a key's two edges also swallowed the second
+                // of two task keys pressed in quick succession.
+                self.lastTaskKeyEvent = Date()
                 self.onTaskKeyPressed?(slot)
             }
             self.client = client

@@ -35,7 +35,7 @@ test("missing configuration falls back to safe defaults", async () => {
   assert.deepEqual(config.colors, {
     pass: "#22C55E",
     active: "#F59E0B",
-    error: "#EF4444",
+    done: "#EF4444",
   });
 });
 
@@ -59,7 +59,7 @@ test("disabling lights preserves customized fields", async () => {
       pollIntervalMs: 3000,
       rpcTimeoutMs: 15000,
       claudeLayerIndex: 2,
-      colors: { pass: "#00FF00", active: "#FFA500", error: "#FF0000" },
+      colors: { pass: "#00FF00", active: "#FFA500", done: "#FF0000" },
     },
     { homeDirectory },
   );
@@ -103,7 +103,7 @@ test("validation rejects malformed configurations", () => {
     pollIntervalMs: 2000,
     rpcTimeoutMs: 10000,
     claudeLayerIndex: 1,
-    colors: { pass: "#22C55E", active: "#F59E0B", error: "#EF4444" },
+    colors: { pass: "#22C55E", active: "#F59E0B", done: "#EF4444" },
   };
 
   assert.equal(validateLightsConfig(base), true);
@@ -123,8 +123,8 @@ test("validation rejects malformed configurations", () => {
     () =>
       validateLightsConfig({
         ...base,
-        colors: { ...base.colors, error: "red" },
+        colors: { ...base.colors, done: "red" },
       }),
-    /colors\.error/,
+    /colors\.done/,
   );
 });

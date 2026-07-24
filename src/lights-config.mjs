@@ -17,7 +17,7 @@ export const DEFAULT_LIGHTS_CONFIG = Object.freeze({
   colors: Object.freeze({
     pass: "#22C55E",
     active: "#F59E0B",
-    error: "#EF4444",
+    done: "#EF4444",
   }),
 });
 
@@ -63,7 +63,7 @@ export function validateLightsConfig(config) {
     config.colors && typeof config.colors === "object",
     "lights.colors must be an object",
   );
-  for (const name of ["pass", "active", "error"]) {
+  for (const name of ["pass", "active", "done"]) {
     assert(
       typeof config.colors[name] === "string" &&
         HEX_COLOR.test(config.colors[name]),
@@ -92,10 +92,16 @@ export async function readLightsConfig({ homeDirectory = os.homedir() } = {}) {
     throw new Error(`Invalid JSON in ${path}: ${error.message}`);
   }
 
+  // "error" was the earlier name for the same red; keep older files loading.
+  const { error: legacyDone, ...parsedColors } = parsed.colors ?? {};
   const config = {
     ...DEFAULT_LIGHTS_CONFIG,
     ...parsed,
-    colors: { ...DEFAULT_LIGHTS_CONFIG.colors, ...(parsed.colors ?? {}) },
+    colors: {
+      ...DEFAULT_LIGHTS_CONFIG.colors,
+      ...(legacyDone ? { done: legacyDone } : {}),
+      ...parsedColors,
+    },
   };
   validateLightsConfig(config);
   return config;

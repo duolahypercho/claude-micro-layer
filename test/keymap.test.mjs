@@ -76,54 +76,42 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   assert.equal(updated.profiles[0].layers[1].id, 1);
   assert.equal(updated.profiles[0].layers[1].name, "Claude Desktop");
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[0], [
-    "KA_M0",
-    "KA_A1",
-  ]);
+    "KV_OAI_AG00",
+    "KV_OAI_AG01",
+  ], "task keys stay vendor agent keys so the firmware lights them");
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[3], [
     "KC_F18",
     "KC_F18",
-    "KA_A13",
+    "KA_A7",
   ], "voice keys are a held keycode, not a macro");
-  assert.equal(updated.macros.length, 16);
-  assert.equal(updated.macros[0].name, "Recent Task 1");
-  assert.equal(updated.macros[0].icon, "icon-message-fas");
+  assert.equal(updated.macros.length, 8);
+  assert.equal(updated.macros[0].name, "Toggle Fast Mode");
+  assert.equal(updated.macros[0].icon, "icon-bolt-lightning-fas");
   assert.equal(
     updated.macros.every((macro) => macro.icon?.startsWith("icon-")),
     true,
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_F", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
   assert.deepEqual(
-    updated.macros.slice(0, 10).map((macro) => macro.name),
+    updated.macros.map((macro) => macro.name),
     [
-      "Recent Task 1",
-      "Recent Task 2",
-      "Recent Task 3",
-      "Recent Task 4",
-      "Recent Task 5",
-      "Recent Task 6",
       "Toggle Fast Mode",
       "Confirm Current Request",
       "Cancel Current Request",
       "Fork Current Task",
+      "Zoom Out",
+      "Zoom In",
+      "Actual Size",
+      "Send Message",
     ],
-  );
-  assert.equal(updated.macros[13].name, "Send Message");
-  assert.equal(
-    updated.macros[13].actions.find((input) => input.act === 2).kc,
-    "KC_ENT",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 16 }, (_, index) => index),
+    Array.from({ length: 8 }, (_, index) => index),
   );
-  assert.equal(updated.multiActions.length, 1);
-  assert.equal(updated.multiActions[0].kcOnTap, "KA_A0");
-  assert.equal(updated.multiActions[0].kcOnDoubleTap, "KA_A14");
-  assert.equal(updated.multiActions[0].tt, 250);
-  assert.deepEqual(updated.profiles[0].multiActionsUsed, [0]);
   assert.equal(
     keymap.profiles[0].layers.length,
     1,
@@ -146,19 +134,15 @@ test("installing actions reuses the lowest free macro IDs", async () => {
 
   const updated = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
-  assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[0], [
-    "KA_M0",
-    "KA_A1",
-  ]);
   assert.equal(updated.macros[1].id, 0, "installs fill the gap below id 5");
   assert.equal(
     Math.max(...updated.macros.map((macro) => macro.id)),
-    16,
+    8,
     "IDs stay in the firmware's low slot range",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 17 }, (_, index) => index),
+    Array.from({ length: 9 }, (_, index) => index),
   );
 });
 
@@ -178,6 +162,28 @@ test("reinstalling does not push macro IDs higher each time", async () => {
 
 test("installing a multiaction reuses the lowest free ID", async () => {
   const keymap = fixtureKeymap();
+  const withMultiAction = (pack) => ({
+    ...pack,
+    layer: {
+      ...pack.layer,
+      layout: {
+        ...pack.layer.layout,
+        keymap: [["KM_0", ...pack.layer.layout.keymap[0].slice(1)],
+          ...pack.layer.layout.keymap.slice(1)],
+      },
+    },
+    multiActions: [
+      {
+        id: 0,
+        name: "Send / New Chat",
+        tap: { keycode: "KA_7", delay: 0, actionType: 2 },
+        onHold: { keycode: "KC_NONE", delay: 0, actionType: 2 },
+        doubleTap: { keycode: "KA_7", delay: 0, actionType: 2 },
+        tapHold: { keycode: "KC_NONE", delay: 0, actionType: 2 },
+        tappingTerms: 250,
+      },
+    ],
+  });
   keymap.multiActions.push({
     id: 4,
     name: "Existing multiaction",
@@ -190,7 +196,7 @@ test("installing a multiaction reuses the lowest free ID", async () => {
     tt: 250,
   });
   keymap.profiles[0].multiActionsUsed.push(4);
-  const layerPack = await loadJson(exampleLayerPath);
+  const layerPack = withMultiAction(await loadJson(exampleLayerPath));
 
   const updated = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
@@ -233,8 +239,7 @@ test("install creates a backup and writes valid JSON", async () => {
   const backup = JSON.parse(await readFile(result.backupPath, "utf8"));
 
   assert.equal(installed.profiles[0].layers[1].name, "Claude Desktop");
-  assert.equal(installed.macros.length, 16);
-  assert.equal(installed.multiActions.length, 1);
+  assert.equal(installed.macros.length, 8);
   assert.equal(backup.profiles[0].layers.length, 1);
   assert.equal(backup.macros.length, 0);
 });
@@ -250,33 +255,34 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.device, "codex_micro");
   assert.equal(exported.layer.name, "Claude Desktop");
   assert.equal("id" in exported.layer, false);
-  assert.deepEqual(exported.layer.layout.keymap[0], ["KM_0", "KA_1"]);
-  assert.equal(exported.actions.length, 16);
-  assert.equal(exported.actions[0].name, "Recent Task 1");
-  assert.equal(exported.actions[0].icon, "icon-message-fas");
+  assert.deepEqual(exported.layer.layout.keymap[0], [
+    "KV_OAI_AG00",
+    "KV_OAI_AG01",
+  ]);
+  assert.equal(exported.actions.length, 8);
+  assert.equal(exported.actions[0].name, "Toggle Fast Mode");
+  assert.equal(exported.actions[0].icon, "icon-bolt-lightning-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_F", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
-  assert.equal(exported.multiActions.length, 1);
-  assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
-  assert.equal(exported.multiActions[0].doubleTap.keycode, "KA_14");
-  assert.equal(exported.multiActions[0].tappingTerms, 250);
 });
 
 test("validation rejects an action reference that is not included", async () => {
   const layerPack = await loadJson(exampleLayerPath);
-  layerPack.actions = layerPack.actions.filter((action) => action.id !== 0);
+  layerPack.actions = layerPack.actions.filter((action) => action.id !== 6);
 
   assert.throws(
     () => validateLayerPack(layerPack),
-    /references missing action KA_0/,
+    /references missing action KA_6/,
   );
 });
 
 test("validation rejects a multiaction reference that is not included", async () => {
   const layerPack = await loadJson(exampleLayerPath);
+  const keymap = layerPack.layer.layout.keymap;
+  keymap[0] = ["KM_0", ...keymap[0].slice(1)];
   layerPack.multiActions = [];
 
   assert.throws(
@@ -367,15 +373,13 @@ test("reinstalling a pack does not accumulate duplicate actions", async () => {
   keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
   const packMacros = keymap.macros.filter((m) => m.name !== "User macro");
-  assert.equal(packMacros.length, 16, "old pack generations must be removed");
+  assert.equal(packMacros.length, 8, "old pack generations must be removed");
   assert.equal(
     keymap.macros.some((m) => m.name === "User macro"),
     true,
     "user macros outside the pack groups must be kept",
   );
-  assert.equal(keymap.multiActions.length, 1);
   assert.equal(keymap.macrosGroups.length, 1);
-  assert.equal(keymap.multiActionsGroups.length, 1);
   const names = new Set(packMacros.map((m) => m.name));
-  assert.equal(names.size, 16, "no duplicate action names");
+  assert.equal(names.size, 8, "no duplicate action names");
 });
