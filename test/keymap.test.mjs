@@ -126,8 +126,8 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     updated.macros
       .slice(13, 16)
       .map((macro) => macro.actions.find((input) => input.act === 2).kc),
-    ["KC_V", "KC_V", "KC_ENT"],
-    "voice runs through the helper; send uses Input's KC_ENT keycode",
+    ["KC_D", "KC_D", "KC_ENT"],
+    "voice sends Command-D; send uses Input's KC_ENT keycode",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
