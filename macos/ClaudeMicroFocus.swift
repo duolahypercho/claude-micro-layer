@@ -22,6 +22,9 @@ private enum ClaudeCommand: UInt32 {
     case zoomIn
     case actualSize
     case newChat
+    case btw
+    case fork
+    case send
 }
 
 private struct HotKeyBinding {
@@ -48,6 +51,9 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .zoomIn, keyCode: UInt32(kVK_ANSI_Equal)),
     HotKeyBinding(command: .actualSize, keyCode: UInt32(kVK_ANSI_0)),
     HotKeyBinding(command: .newChat, keyCode: UInt32(kVK_ANSI_N)),
+    HotKeyBinding(command: .btw, keyCode: UInt32(kVK_ANSI_B)),
+    HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
+    HotKeyBinding(command: .send, keyCode: UInt32(kVK_Return)),
 ]
 
 private var registeredHotKeys: [EventHotKeyRef] = []
@@ -213,6 +219,67 @@ private func sendKey(
     keyUp.flags = flags
     keyDown.postToPid(application.processIdentifier)
     keyUp.postToPid(application.processIdentifier)
+}
+
+private let letterKeyCodes: [Character: CGKeyCode] = [
+    "b": CGKeyCode(kVK_ANSI_B), "f": CGKeyCode(kVK_ANSI_F),
+    "k": CGKeyCode(kVK_ANSI_K), "o": CGKeyCode(kVK_ANSI_O),
+    "r": CGKeyCode(kVK_ANSI_R), "t": CGKeyCode(kVK_ANSI_T),
+    "w": CGKeyCode(kVK_ANSI_W),
+]
+
+// The composer is the focused, editable text area; focusing it before typing is
+// what lets these controls work with Claude behind another window, where a bare
+// keystroke would otherwise land in whatever app is frontmost.
+private func composerTextArea(in application: NSRunningApplication) -> AXUIElement? {
+    allElements(application).first { element in
+        guard
+            stringAttribute(element, kAXRoleAttribute) == (kAXTextAreaRole as String),
+            isEnabled(element)
+        else { return false }
+        var settable = DarwinBoolean(false)
+        AXUIElementIsAttributeSettable(
+            element,
+            kAXFocusedAttribute as CFString,
+            &settable
+        )
+        return settable.boolValue
+    }
+}
+
+private func focusComposer(in application: NSRunningApplication) {
+    guard let composer = composerTextArea(in: application) else { return }
+    _ = AXUIElementSetAttributeValue(
+        composer,
+        kAXFocusedAttribute as CFString,
+        kCFBooleanTrue
+    )
+}
+
+// Fast mode and fork are slash commands, not shortcuts or buttons, so they must
+// be typed. Doing it in the helper rather than as a keyboard macro means the
+// composer is focused first and the timing is reliable, instead of depending on
+// the firmware honouring per-key delays. Typing the slash opens Claude's command
+// menu; a left arrow dismisses it so the following Return sends the message.
+private func typeSlashCommand(_ word: String, in application: NSRunningApplication) {
+    focusComposer(in: application)
+    sendKey(CGKeyCode(kVK_ANSI_Slash), to: application)
+    for character in word {
+        guard let keyCode = letterKeyCodes[character] else { continue }
+        sendKey(keyCode, to: application)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        sendKey(CGKeyCode(kVK_LeftArrow), to: application)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+            sendKey(CGKeyCode(kVK_Return), to: application)
+        }
+    }
+    lightsLog("typed /\\(word)")
+}
+
+private func sendComposer(in application: NSRunningApplication) {
+    focusComposer(in: application)
+    sendKey(CGKeyCode(kVK_Return), to: application)
 }
 
 // Claude's dictation is Command-D, which toggles recording. The voice key is
@@ -428,6 +495,12 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             sendKey(CGKeyCode(kVK_ANSI_0), flags: .maskCommand, to: application)
         case .newChat:
             sendKey(CGKeyCode(kVK_ANSI_N), flags: .maskCommand, to: application)
+        case .btw:
+            typeSlashCommand("btw", in: application)
+        case .fork:
+            typeSlashCommand("fork", in: application)
+        case .send:
+            sendComposer(in: application)
         }
     }
 }
