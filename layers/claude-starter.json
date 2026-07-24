@@ -68,7 +68,7 @@
   "actions": [
     {
       "id": 6,
-      "name": "Fast Mode",
+      "name": "Btw",
       "color": null,
       "icon": "icon-bolt-lightning-fas",
       "keyInputs": [
@@ -78,17 +78,7 @@
           "actionType": 2
         },
         {
-          "keycode": "KC_F",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_A",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_S",
+          "keycode": "KC_B",
           "delay": 0,
           "actionType": 2
         },
@@ -98,13 +88,18 @@
           "actionType": 2
         },
         {
-          "keycode": "KC_ENT",
-          "delay": 400,
+          "keycode": "KC_W",
+          "delay": 100,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LEFT",
+          "delay": 50,
           "actionType": 2
         },
         {
           "keycode": "KC_ENT",
-          "delay": 150,
+          "delay": 0,
           "actionType": 2
         }
       ]
@@ -223,17 +218,17 @@
         },
         {
           "keycode": "KC_K",
+          "delay": 100,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LEFT",
+          "delay": 50,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_ENT",
           "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_ENT",
-          "delay": 400,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_ENT",
-          "delay": 150,
           "actionType": 2
         }
       ]

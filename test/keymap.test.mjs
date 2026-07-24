@@ -85,7 +85,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A7",
   ], "the voice keys are a held keycode, not a macro");
   assert.equal(updated.macros.length, 8);
-  assert.equal(updated.macros[0].name, "Fast Mode");
+  assert.equal(updated.macros[0].name, "Btw");
   assert.equal(updated.macros[0].icon, "icon-bolt-lightning-fas");
   assert.equal(
     updated.macros.every((macro) => macro.icon?.startsWith("icon-")),
@@ -93,12 +93,12 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT", "KC_ENT"],
+    ["KC_SLSH", "KC_B", "KC_T", "KC_W", "KC_LEFT", "KC_ENT"],
   );
   assert.deepEqual(
     updated.macros.map((macro) => macro.name),
     [
-      "Fast Mode",
+      "Btw",
       "Confirm Current Request",
       "Cancel Current Request",
       "Fork Current Task",
@@ -260,12 +260,12 @@ test("an installed layer exports as a portable pack", async () => {
     "KV_OAI_AG01",
   ]);
   assert.equal(exported.actions.length, 8);
-  assert.equal(exported.actions[0].name, "Fast Mode");
+  assert.equal(exported.actions[0].name, "Btw");
   assert.equal(exported.actions[0].icon, "icon-bolt-lightning-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_SLSH", "KC_F", "KC_A", "KC_S", "KC_T", "KC_ENT", "KC_ENT"],
+    ["KC_SLSH", "KC_B", "KC_T", "KC_W", "KC_LEFT", "KC_ENT"],
   );
 });
 
