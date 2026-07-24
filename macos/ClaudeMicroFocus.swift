@@ -15,10 +15,8 @@ private enum ClaudeCommand: UInt32 {
     case recent4
     case recent5
     case recent6
-    case fastMode
     case confirm
     case cancel
-    case fork
     case voice
     case zoomOut
     case zoomIn
@@ -43,10 +41,8 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .recent4, keyCode: UInt32(kVK_ANSI_4)),
     HotKeyBinding(command: .recent5, keyCode: UInt32(kVK_ANSI_5)),
     HotKeyBinding(command: .recent6, keyCode: UInt32(kVK_ANSI_6)),
-    HotKeyBinding(command: .fastMode, keyCode: UInt32(kVK_ANSI_F)),
     HotKeyBinding(command: .confirm, keyCode: UInt32(kVK_ANSI_Y)),
     HotKeyBinding(command: .cancel, keyCode: UInt32(kVK_ANSI_X)),
-    HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
     HotKeyBinding(command: .voice, keyCode: UInt32(kVK_F18), modifiers: 0),
     HotKeyBinding(command: .zoomOut, keyCode: UInt32(kVK_ANSI_Minus)),
     HotKeyBinding(command: .zoomIn, keyCode: UInt32(kVK_ANSI_Equal)),
@@ -55,7 +51,6 @@ private let hotKeyBindings = [
 ]
 
 private var registeredHotKeys: [EventHotKeyRef] = []
-private var lastNonFastEffort: Double = 2
 
 func runningClaude() -> NSRunningApplication? {
     NSRunningApplication.runningApplications(
@@ -390,46 +385,6 @@ private func effortSlider(in application: NSRunningApplication) -> AXUIElement? 
     }
 }
 
-private func toggleFastMode(in application: NSRunningApplication) {
-    if pressControl(in: application, labels: ["Fast mode", "Toggle Fast mode"]) {
-        return
-    }
-
-    func updateSlider() {
-        guard
-            let slider = effortSlider(in: application),
-            let current = attribute(slider, kAXValueAttribute) as? NSNumber
-        else {
-            return
-        }
-        let currentValue = current.doubleValue
-        let target: Double
-        if currentValue > 0 {
-            lastNonFastEffort = currentValue
-            target = 0
-        } else {
-            target = lastNonFastEffort
-        }
-        _ = AXUIElementSetAttributeValue(
-            slider,
-            kAXValueAttribute as CFString,
-            NSNumber(value: target)
-        )
-    }
-
-    if effortSlider(in: application) != nil {
-        updateSlider()
-        return
-    }
-
-    let opened = allElements(application).first { element in
-        isPressable(element) && normalized(elementLabel(element)).hasPrefix("effort:")
-    }.map(pressElement) ?? false
-    if opened {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: updateSlider)
-    }
-}
-
 private func handleClaudeCommand(_ command: ClaudeCommand) {
     lightsLog("hotkey received: \(command)")
     if command == .focus {
@@ -456,8 +411,6 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
                 .recent6,
             ].firstIndex(of: command) else { return }
             pressRecentTask(index, in: application)
-        case .fastMode:
-            toggleFastMode(in: application)
         // Claude answers its own permission prompts from the keyboard:
         // Command-Return approves, "1" rejects. Driving those beats hunting for
         // a button whose label changes with the prompt.
@@ -465,12 +418,6 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             sendKey(CGKeyCode(kVK_Return), flags: .maskCommand, to: application)
         case .cancel:
             sendKey(CGKeyCode(kVK_ANSI_1), to: application)
-        case .fork:
-            _ = pressControl(
-                in: application,
-                labels: ["Fork from here", "Continue in new chat"],
-                preferLast: true
-            )
         case .voice:
             activateVoiceControl(in: application)
         case .zoomOut:

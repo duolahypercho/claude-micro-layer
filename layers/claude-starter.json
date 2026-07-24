@@ -32,7 +32,7 @@
         ],
         [
           "KC_F18",
-          "KC_F18",
+          "KA_15",
           "KA_13"
         ]
       ],
@@ -53,24 +53,14 @@
   "actions": [
     {
       "id": 6,
-      "name": "Toggle Fast Mode",
+      "name": "Fast Mode",
       "color": null,
       "icon": "icon-bolt-lightning-fas",
       "keyInputs": [
         {
-          "keycode": "KC_LCTL",
+          "keycode": "KC_SLSH",
           "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
+          "actionType": 2
         },
         {
           "keycode": "KC_F",
@@ -78,19 +68,24 @@
           "actionType": 2
         },
         {
-          "keycode": "KC_LGUI",
+          "keycode": "KC_A",
           "delay": 0,
-          "actionType": 0
+          "actionType": 2
         },
         {
-          "keycode": "KC_LALT",
+          "keycode": "KC_S",
           "delay": 0,
-          "actionType": 0
+          "actionType": 2
         },
         {
-          "keycode": "KC_LCTL",
+          "keycode": "KC_T",
           "delay": 0,
-          "actionType": 0
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
+          "actionType": 2
         }
       ]
     },
@@ -187,19 +182,24 @@
       "icon": "icon-arrows-turn-to-dots-fas",
       "keyInputs": [
         {
-          "keycode": "KC_LCTL",
+          "keycode": "KC_SLSH",
           "delay": 0,
-          "actionType": 1
+          "actionType": 2
         },
         {
-          "keycode": "KC_LALT",
+          "keycode": "KC_F",
           "delay": 0,
-          "actionType": 1
+          "actionType": 2
         },
         {
-          "keycode": "KC_LGUI",
+          "keycode": "KC_O",
           "delay": 0,
-          "actionType": 1
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_R",
+          "delay": 0,
+          "actionType": 2
         },
         {
           "keycode": "KC_K",
@@ -207,19 +207,9 @@
           "actionType": 2
         },
         {
-          "keycode": "KC_LGUI",
+          "keycode": "KC_ENT",
           "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
+          "actionType": 2
         }
       ]
     },
@@ -362,49 +352,6 @@
           "keycode": "KC_ENT",
           "delay": 0,
           "actionType": 2
-        }
-      ]
-    },
-    {
-      "id": 14,
-      "name": "Focus Claude",
-      "color": null,
-      "icon": "icon-window-restore-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_C",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
