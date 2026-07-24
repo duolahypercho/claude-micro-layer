@@ -20,7 +20,6 @@ private enum ClaudeCommand: UInt32 {
     case cancel
     case fork
     case voice
-    case send
     case zoomOut
     case zoomIn
     case actualSize
@@ -49,7 +48,6 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .cancel, keyCode: UInt32(kVK_ANSI_X)),
     HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
     HotKeyBinding(command: .voice, keyCode: UInt32(kVK_F18), modifiers: 0),
-    HotKeyBinding(command: .send, keyCode: UInt32(kVK_Return)),
     HotKeyBinding(command: .zoomOut, keyCode: UInt32(kVK_ANSI_Minus)),
     HotKeyBinding(command: .zoomIn, keyCode: UInt32(kVK_ANSI_Equal)),
     HotKeyBinding(command: .actualSize, keyCode: UInt32(kVK_ANSI_0)),
@@ -194,38 +192,6 @@ private func pressControl(
         return false
     }
     return pressElement(target)
-}
-
-private func composerTextArea(in application: NSRunningApplication) -> AXUIElement? {
-    allElements(application).first { element in
-        guard
-            stringAttribute(element, kAXRoleAttribute) == (kAXTextAreaRole as String),
-            isEnabled(element)
-        else { return false }
-        var settable = DarwinBoolean(false)
-        AXUIElementIsAttributeSettable(
-            element,
-            kAXFocusedAttribute as CFString,
-            &settable
-        )
-        return settable.boolValue
-    }
-}
-
-// Sending is a Return in the focused composer rather than a labelled button,
-// so focus the message field first; this also works with Claude in the
-// background, where a bare Return would go to the frontmost app instead.
-private func sendMessage(in application: NSRunningApplication) {
-    let composer = composerTextArea(in: application)
-    lightsLog("send: composer found = \(composer != nil)")
-    if let composer {
-        _ = AXUIElementSetAttributeValue(
-            composer,
-            kAXFocusedAttribute as CFString,
-            kCFBooleanTrue
-        )
-    }
-    sendKey(CGKeyCode(kVK_Return), to: application)
 }
 
 private func sendKey(
@@ -507,8 +473,6 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             )
         case .voice:
             activateVoiceControl(in: application)
-        case .send:
-            sendMessage(in: application)
         case .zoomOut:
             sendKey(CGKeyCode(kVK_ANSI_Minus), flags: .maskCommand, to: application)
         case .zoomIn:

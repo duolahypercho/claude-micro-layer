@@ -359,39 +359,9 @@
       "icon": "icon-paper-plane-fas",
       "keyInputs": [
         {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
           "keycode": "KC_ENT",
           "delay": 0,
           "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
