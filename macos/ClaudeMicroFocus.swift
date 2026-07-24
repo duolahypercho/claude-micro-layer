@@ -15,16 +15,12 @@ private enum ClaudeCommand: UInt32 {
     case recent4
     case recent5
     case recent6
-    case confirm
-    case cancel
     case voice
     case zoomOut
     case zoomIn
     case actualSize
     case newChat
-    case btw
     case fork
-    case send
 }
 
 private struct HotKeyBinding {
@@ -44,16 +40,12 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .recent4, keyCode: UInt32(kVK_ANSI_4)),
     HotKeyBinding(command: .recent5, keyCode: UInt32(kVK_ANSI_5)),
     HotKeyBinding(command: .recent6, keyCode: UInt32(kVK_ANSI_6)),
-    HotKeyBinding(command: .confirm, keyCode: UInt32(kVK_ANSI_Y)),
-    HotKeyBinding(command: .cancel, keyCode: UInt32(kVK_ANSI_X)),
     HotKeyBinding(command: .voice, keyCode: UInt32(kVK_F18), modifiers: 0),
     HotKeyBinding(command: .zoomOut, keyCode: UInt32(kVK_ANSI_Minus)),
     HotKeyBinding(command: .zoomIn, keyCode: UInt32(kVK_ANSI_Equal)),
     HotKeyBinding(command: .actualSize, keyCode: UInt32(kVK_ANSI_0)),
     HotKeyBinding(command: .newChat, keyCode: UInt32(kVK_ANSI_N)),
-    HotKeyBinding(command: .btw, keyCode: UInt32(kVK_ANSI_B)),
     HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
-    HotKeyBinding(command: .send, keyCode: UInt32(kVK_Return)),
 ]
 
 private var registeredHotKeys: [EventHotKeyRef] = []
@@ -222,10 +214,8 @@ private func sendKey(
 }
 
 private let letterKeyCodes: [Character: CGKeyCode] = [
-    "b": CGKeyCode(kVK_ANSI_B), "f": CGKeyCode(kVK_ANSI_F),
-    "k": CGKeyCode(kVK_ANSI_K), "o": CGKeyCode(kVK_ANSI_O),
-    "r": CGKeyCode(kVK_ANSI_R), "t": CGKeyCode(kVK_ANSI_T),
-    "w": CGKeyCode(kVK_ANSI_W),
+    "f": CGKeyCode(kVK_ANSI_F), "k": CGKeyCode(kVK_ANSI_K),
+    "o": CGKeyCode(kVK_ANSI_O), "r": CGKeyCode(kVK_ANSI_R),
 ]
 
 // The composer is the focused, editable text area; focusing it before typing is
@@ -256,11 +246,11 @@ private func focusComposer(in application: NSRunningApplication) {
     )
 }
 
-// Fast mode and fork are slash commands, not shortcuts or buttons, so they must
-// be typed. Doing it in the helper rather than as a keyboard macro means the
-// composer is focused first and the timing is reliable, instead of depending on
-// the firmware honouring per-key delays. Typing the slash opens Claude's command
-// menu; a left arrow dismisses it so the following Return sends the message.
+// Fork is a slash command, not a shortcut or button, so it must be typed. Doing
+// it in the helper rather than as a keyboard macro means the composer is focused
+// first and the timing is reliable, instead of depending on the firmware
+// honouring per-key delays. Typing the slash opens Claude's command menu; a left
+// arrow dismisses it so the following Return sends the message.
 private func typeSlashCommand(_ word: String, in application: NSRunningApplication) {
     focusComposer(in: application)
     sendKey(CGKeyCode(kVK_ANSI_Slash), to: application)
@@ -275,11 +265,6 @@ private func typeSlashCommand(_ word: String, in application: NSRunningApplicati
         }
     }
     lightsLog("typed /\\(word)")
-}
-
-private func sendComposer(in application: NSRunningApplication) {
-    focusComposer(in: application)
-    sendKey(CGKeyCode(kVK_Return), to: application)
 }
 
 // Claude's dictation is Command-D, which toggles recording. The voice key is
@@ -478,13 +463,6 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
                 .recent6,
             ].firstIndex(of: command) else { return }
             pressRecentTask(index, in: application)
-        // Claude answers its own permission prompts from the keyboard:
-        // Command-Return approves, "1" rejects. Driving those beats hunting for
-        // a button whose label changes with the prompt.
-        case .confirm:
-            sendKey(CGKeyCode(kVK_Return), flags: .maskCommand, to: application)
-        case .cancel:
-            sendKey(CGKeyCode(kVK_ANSI_1), to: application)
         case .voice:
             activateVoiceControl(in: application)
         case .zoomOut:
@@ -495,12 +473,8 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             sendKey(CGKeyCode(kVK_ANSI_0), flags: .maskCommand, to: application)
         case .newChat:
             sendKey(CGKeyCode(kVK_ANSI_N), flags: .maskCommand, to: application)
-        case .btw:
-            typeSlashCommand("btw", in: application)
         case .fork:
             typeSlashCommand("fork", in: application)
-        case .send:
-            sendComposer(in: application)
         }
     }
 }
