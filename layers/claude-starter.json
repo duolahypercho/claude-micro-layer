@@ -501,12 +501,35 @@
           "actionType": 0
         }
       ]
+    },
+    {
+      "id": 15,
+      "name": "New Chat",
+      "color": null,
+      "icon": "icon-square-plus-far",
+      "keyInputs": [
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_N",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        }
+      ]
     }
   ],
   "multiActions": [
     {
       "id": 0,
-      "name": "Recent Task 1 / Focus Claude",
+      "name": "Recent Task 1 / New Chat / Focus Claude",
       "color": null,
       "icon": "icon-message-fas",
       "tap": {
@@ -515,7 +538,7 @@
         "actionType": 1
       },
       "onHold": {
-        "keycode": "KC_NONE",
+        "keycode": "KA_15",
         "delay": 0,
         "actionType": 1
       },
