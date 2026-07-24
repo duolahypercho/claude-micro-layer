@@ -7,6 +7,7 @@ import { join } from "node:path";
 import WebSocket from "ws";
 
 import { loadJson, validateInputKeymap } from "./keymap.mjs";
+import { updateInputStore } from "./input-store.mjs";
 
 const DEFAULT_INPUT_APP = "/Applications/input.app";
 const INPUT_EXECUTABLE = join("Contents", "MacOS", "input");
@@ -271,6 +272,14 @@ export async function syncInputKeymap({
         debugPid = (await inputProcessIds(inputAppPath))[0];
       }
       if (debugPid) await stopDebugInput(debugPid, inputAppPath);
+      // With Input closed, mirror the keymap into its database so its UI shows
+      // the synced layer and never re-pushes a stale copy. A store failure must
+      // not fail the sync — the keyboard is already updated.
+      try {
+        await updateInputStore(keymap);
+      } catch {
+        // Leave the database as it was; the keyboard sync still succeeded.
+      }
     } finally {
       if (launched) await execFileAsync("/usr/bin/open", [inputAppPath]);
     }

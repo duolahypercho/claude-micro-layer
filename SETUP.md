@@ -142,7 +142,10 @@ node ./bin/claude-micro-layer.mjs sync
 During sync, the tool temporarily starts Input with a localhost-only device
 bridge, waits for the Codex Micro, writes `keymap.json`, and compares the
 keyboard's reported checksum with the file it sent. It then closes the
-temporary bridge and reopens Input normally.
+temporary bridge, mirrors the keymap into Input's own database (backing the
+database up first) so the app shows the same layer it just sent, and reopens
+Input normally. Without that mirror step Input would keep displaying — and
+could re-push — whatever layer it held before the sync.
 
 Success looks similar to:
 

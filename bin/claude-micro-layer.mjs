@@ -30,7 +30,8 @@ Usage:
   claude-micro-layer lights on|off|status
 
 Input should be closed before install or sync. Install creates a timestamped
-backup; sync writes the verified keymap to the keyboard and reopens Input.
+backup; sync writes the verified keymap to the keyboard, mirrors it into Input's
+database so its UI matches, and reopens Input.
 Lights mirror Claude chat statuses on the six task keys while Layer 2 is
 active; the helper needs macOS Input Monitoring access the first time.`);
 }
