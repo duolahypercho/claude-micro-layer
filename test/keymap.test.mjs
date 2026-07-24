@@ -85,26 +85,26 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A7",
   ], "the voice keys are a held keycode, not a macro");
   assert.equal(updated.macros.length, 8);
-  assert.equal(updated.macros[0].name, "Btw");
-  assert.equal(updated.macros[0].icon, "icon-bolt-lightning-fas");
+  assert.equal(updated.macros[0].name, "Zoom Out");
+  assert.equal(updated.macros[0].icon, "icon-magnifying-glass-minus-fas");
   assert.equal(
     updated.macros.every((macro) => macro.icon?.startsWith("icon-")),
     true,
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_B", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_MINS", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
   assert.deepEqual(
     updated.macros.map((macro) => macro.name),
     [
+      "Zoom Out",
+      "Zoom In",
+      "Actual Size",
       "Btw",
       "Confirm Current Request",
       "Cancel Current Request",
       "Fork Current Task",
-      "Zoom Out",
-      "Zoom In",
-      "Actual Size",
       "Send Message",
     ],
   );
@@ -260,12 +260,12 @@ test("an installed layer exports as a portable pack", async () => {
     "KV_OAI_AG01",
   ]);
   assert.equal(exported.actions.length, 8);
-  assert.equal(exported.actions[0].name, "Btw");
-  assert.equal(exported.actions[0].icon, "icon-bolt-lightning-fas");
+  assert.equal(exported.actions[0].name, "Zoom Out");
+  assert.equal(exported.actions[0].icon, "icon-magnifying-glass-minus-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_B", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_MINS", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
 });
 

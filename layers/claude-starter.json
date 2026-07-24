@@ -3,7 +3,7 @@
   "formatVersion": 1,
   "device": "codex_micro",
   "name": "Claude Desktop",
-  "description": "Claude Desktop recent tasks, task controls, push-to-talk voice, and zoom controls for macOS.",
+  "description": "Claude Desktop recent chats, task controls, push-to-talk voice, and zoom controls for macOS.",
   "linkedApp": {
     "name": "Claude",
     "process": "com.anthropic.claudefordesktop",
@@ -25,22 +25,22 @@
           "KV_OAI_AG05"
         ],
         [
-          "KA_6",
-          "KA_7",
-          "KA_8",
-          "KA_9"
+          "KA_3",
+          "KA_4",
+          "KA_5",
+          "KA_6"
         ],
         [
           "KC_F18",
           "KC_F18",
-          "KA_13"
+          "KA_7"
         ]
       ],
       "encoders": [
         [
-          "KA_10",
-          "KA_11",
-          "KA_12"
+          "KA_0",
+          "KA_1",
+          "KA_2"
         ]
       ],
       "joystick": {
@@ -67,179 +67,7 @@
   },
   "actions": [
     {
-      "id": 6,
-      "name": "Btw",
-      "color": null,
-      "icon": "icon-bolt-lightning-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_B",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "name": "Confirm Current Request",
-      "color": null,
-      "icon": "icon-check-double-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_Y",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 8,
-      "name": "Cancel Current Request",
-      "color": null,
-      "icon": "icon-xmark-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_X",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 9,
-      "name": "Fork Current Task",
-      "color": null,
-      "icon": "icon-arrows-turn-to-dots-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_K",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 10,
+      "id": 0,
       "name": "Zoom Out",
       "color": null,
       "icon": "icon-magnifying-glass-minus-fas",
@@ -282,7 +110,7 @@
       ]
     },
     {
-      "id": 11,
+      "id": 1,
       "name": "Zoom In",
       "color": null,
       "icon": "icon-magnifying-glass-plus-fas",
@@ -325,7 +153,7 @@
       ]
     },
     {
-      "id": 12,
+      "id": 2,
       "name": "Actual Size",
       "color": null,
       "icon": "icon-maximize-fas",
@@ -368,10 +196,94 @@
       ]
     },
     {
-      "id": 13,
-      "name": "Send Message",
+      "id": 3,
+      "name": "Btw",
       "color": null,
-      "icon": "icon-paper-plane-fas",
+      "icon": "icon-bolt-lightning-fas",
+      "keyInputs": [
+        {
+          "keycode": "KC_SLSH",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_B",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_T",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_W",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_T",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_W",
+          "delay": 100,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_LEFT",
+          "delay": 50,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
+          "actionType": 2
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Confirm Current Request",
+      "color": null,
+      "icon": "icon-check-double-fas",
+      "keyInputs": [
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_LGUI",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
+          "actionType": 0
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Cancel Current Request",
+      "color": null,
+      "icon": "icon-xmark-fas",
+      "keyInputs": [
+        {
+          "keycode": "KC_1",
+          "delay": 0,
+          "actionType": 2
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Fork Current Task",
+      "color": null,
+      "icon": "icon-arrows-turn-to-dots-fas",
       "keyInputs": [
         {
           "keycode": "KC_LCTL",
@@ -389,7 +301,7 @@
           "actionType": 1
         },
         {
-          "keycode": "KC_ENT",
+          "keycode": "KC_K",
           "delay": 0,
           "actionType": 2
         },
@@ -409,8 +321,19 @@
           "actionType": 0
         }
       ]
+    },
+    {
+      "id": 7,
+      "name": "Send Message",
+      "color": null,
+      "icon": "icon-paper-plane-fas",
+      "keyInputs": [
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
+          "actionType": 2
+        }
+      ]
     }
-  ],
-  "author": "duolahypercho",
-  "actionGroupColor": "#D97757"
+  ]
 }
