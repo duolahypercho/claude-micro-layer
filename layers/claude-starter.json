@@ -3,7 +3,7 @@
   "formatVersion": 1,
   "device": "codex_micro",
   "name": "Claude Desktop",
-  "description": "Claude Desktop recent tasks, task controls, voice input, and zoom controls for macOS.",
+  "description": "Claude Desktop recent tasks, task controls, push-to-talk voice, and zoom controls for macOS.",
   "author": "duolahypercho",
   "actionGroupColor": "#D97757",
   "actions": [
@@ -586,6 +586,7 @@
         "magic": 1,
         "color": 14251863
       }
-    }
+    },
+    "linkedAppId": 0
   }
 }
