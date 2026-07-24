@@ -331,6 +331,19 @@ function nextId(items) {
   return items.reduce((highest, item) => Math.max(highest, item.id), -1) + 1;
 }
 
+// The firmware addresses macros by a small slot number, so ids cannot simply
+// climb past the previous install's high-water mark: reinstalling would walk
+// them out of the device's range and every macro key would go dead while plain
+// keycodes kept working. Hand out the lowest free slots instead.
+function freeIds(items, count) {
+  const taken = new Set(items.map((item) => item.id));
+  const ids = [];
+  for (let id = 0; ids.length < count; id += 1) {
+    if (!taken.has(id)) ids.push(id);
+  }
+  return ids;
+}
+
 function installPackAssets(keymap, layerPack, profile) {
   const sourceActions = layerPack.actions ?? [];
   const sourceMultiActions = layerPack.multiActions ?? [];
@@ -343,15 +356,18 @@ function installPackAssets(keymap, layerPack, profile) {
   keymap.multiActions ??= [];
   keymap.multiActionsGroups ??= [];
 
-  const firstActionId = nextId(keymap.macros);
+  const actionIds = freeIds(keymap.macros, sourceActions.length);
   const idMap = new Map(
-    sourceActions.map((action, index) => [action.id, firstActionId + index]),
+    sourceActions.map((action, index) => [action.id, actionIds[index]]),
   );
-  const firstMultiActionId = nextId(keymap.multiActions);
+  const multiActionIds = freeIds(
+    keymap.multiActions,
+    sourceMultiActions.length,
+  );
   const multiActionIdMap = new Map(
     sourceMultiActions.map((multiAction, index) => [
       multiAction.id,
-      firstMultiActionId + index,
+      multiActionIds[index],
     ]),
   );
   const mapPortableRef = (keycode) => {
@@ -584,6 +600,11 @@ export function applyLayerPack(
   }
 
   const existingLinkedAppId = targetProfile.layers[targetIndex]?.linkedAppId;
+  // Retire the previous install's assets before allocating new IDs, so a
+  // reinstall reclaims the same slots instead of climbing past them.
+  targetProfile.layers[targetIndex] = blankLayer(targetIndex);
+  removeOrphanedPackAssets(updatedKeymap);
+
   targetProfile.layers[targetIndex] = {
     ...installPackAssets(updatedKeymap, layerPack, targetProfile),
     id: targetIndex,

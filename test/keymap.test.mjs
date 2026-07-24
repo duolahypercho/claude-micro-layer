@@ -93,7 +93,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LGUI", "KC_1", "KC_LGUI"],
   );
   assert.deepEqual(
     updated.macros.slice(0, 10).map((macro) => macro.name),
@@ -132,7 +132,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   assert.equal(keymap.macros.length, 0, "source actions must not be mutated");
 });
 
-test("installing actions allocates IDs after existing Input macros", async () => {
+test("installing actions reuses the lowest free macro IDs", async () => {
   const keymap = fixtureKeymap();
   keymap.macros.push({
     id: 5,
@@ -148,16 +148,35 @@ test("installing actions allocates IDs after existing Input macros", async () =>
 
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[0], [
     "KA_M0",
-    "KA_A7",
+    "KA_A1",
   ]);
-  assert.equal(updated.macros[1].id, 6);
+  assert.equal(updated.macros[1].id, 0, "installs fill the gap below id 5");
+  assert.equal(
+    Math.max(...updated.macros.map((macro) => macro.id)),
+    16,
+    "IDs stay in the firmware's low slot range",
+  );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 17 }, (_, index) => index + 5),
+    Array.from({ length: 17 }, (_, index) => index),
   );
 });
 
-test("installing a multiaction allocates an unused Input ID", async () => {
+// The firmware addresses macros by slot, so IDs that climb on every reinstall
+// eventually leave its range and every macro key goes dead.
+test("reinstalling does not push macro IDs higher each time", async () => {
+  const layerPack = await loadJson(exampleLayerPath);
+
+  let keymap = applyLayerPack(fixtureKeymap(), layerPack, { layerNumber: 2 });
+  const firstIds = keymap.macros.map((macro) => macro.id);
+  for (let round = 0; round < 5; round += 1) {
+    keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
+  }
+
+  assert.deepEqual(keymap.macros.map((macro) => macro.id), firstIds);
+});
+
+test("installing a multiaction reuses the lowest free ID", async () => {
   const keymap = fixtureKeymap();
   keymap.multiActions.push({
     id: 4,
@@ -175,9 +194,9 @@ test("installing a multiaction allocates an unused Input ID", async () => {
 
   const updated = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
-  assert.equal(updated.profiles[0].layers[1].layout.keymap[0][0], "KA_M5");
-  assert.equal(updated.multiActions[1].id, 5);
-  assert.deepEqual(updated.profiles[0].multiActionsUsed, [4, 5]);
+  assert.equal(updated.profiles[0].layers[1].layout.keymap[0][0], "KA_M0");
+  assert.equal(updated.multiActions[1].id, 0);
+  assert.deepEqual(updated.profiles[0].multiActionsUsed, [0, 4]);
 });
 
 test("Layer 1 cannot be replaced", async () => {
@@ -238,7 +257,7 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
+    ["KC_LGUI", "KC_1", "KC_LGUI"],
   );
   assert.equal(exported.multiActions.length, 1);
   assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
