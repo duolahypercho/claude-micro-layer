@@ -101,7 +101,11 @@ test("applying a keymap mirrors layers, actions, and links into the store", () =
   const row = updated.collections[1].data[0];
 
   assert.equal(row.profiles[0].layers[1].name, "Claude Desktop");
-  assert.deepEqual(row.profiles[0].layers[1].layout.keymap, [["KA_A0"]]);
+  assert.deepEqual(
+    row.profiles[0].layers[1].layout.keymap,
+    [["KA_0"]],
+    "device KA_A{id} becomes Input's KA_{id} so the key resolves",
+  );
   assert.equal(row.actions.length, 1);
   assert.equal(row.actions[0].name, "Send Message");
   assert.deepEqual(
@@ -111,6 +115,20 @@ test("applying a keymap mirrors layers, actions, and links into the store", () =
   );
   assert.equal(row.actionGroups[0].name, "Claude Desktop");
   assert.equal(row.linkedApps[0].process, "com.anthropic.claudefordesktop");
+});
+
+test("device action and multiaction refs translate to Input's app format", () => {
+  const device = deviceKeymap();
+  device.profiles[0].layers[1].layout.encoders = [["KA_A5", "KC_MUTE"]];
+  device.profiles[0].layers[1].layout.keymap = [["KA_M0", "KA_A3", "KV_OAI_AG00"]];
+  const row = applyKeymapToInputStore(fixtureStore(), device).collections[1]
+    .data[0];
+  assert.deepEqual(row.profiles[0].layers[1].layout.keymap, [
+    ["KM_0", "KA_3", "KV_OAI_AG00"],
+  ]);
+  assert.deepEqual(row.profiles[0].layers[1].layout.encoders, [
+    ["KA_5", "KC_MUTE"],
+  ]);
 });
 
 test("applying a keymap preserves fields the tool does not own", () => {

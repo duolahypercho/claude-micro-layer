@@ -35,16 +35,40 @@ function actionFromMacro(macro) {
   };
 }
 
+// The keyboard addresses actions as KA_A{id} and multiactions as KA_M{id};
+// Input's own database uses KA_{id} and KM_{id}. Input translates on import, so
+// every action reference mirrored from the device file must be converted too or
+// the app cannot resolve it and shows the key as unassigned.
+function toAppKeycode(keycode) {
+  if (typeof keycode !== "string") return keycode;
+  if (keycode.startsWith("KA_A")) return keycode.replace("KA_A", "KA_");
+  if (keycode.startsWith("KA_M")) return keycode.replace("KA_M", "KM_");
+  return keycode;
+}
+
+function layerToAppFormat(layer) {
+  const layout = layer.layout ?? {};
+  const mapRow = (row) => (row ?? []).map(toAppKeycode);
+  return {
+    ...layer,
+    layout: {
+      ...layout,
+      keymap: (layout.keymap ?? []).map(mapRow),
+      encoders: (layout.encoders ?? []).map(mapRow),
+    },
+  };
+}
+
 function multiactionFromDevice(multiAction) {
   return {
     id: multiAction.id,
     name: multiAction.name,
     color: multiAction.color ?? null,
     icon: multiAction.icon ?? null,
-    kcOnTap: multiAction.kcOnTap,
-    kcOnHold: multiAction.kcOnHold,
-    kcOnDoubleTap: multiAction.kcOnDoubleTap,
-    kcOnTapHold: multiAction.kcOnTapHold,
+    kcOnTap: toAppKeycode(multiAction.kcOnTap),
+    kcOnHold: toAppKeycode(multiAction.kcOnHold),
+    kcOnDoubleTap: toAppKeycode(multiAction.kcOnDoubleTap),
+    kcOnTapHold: toAppKeycode(multiAction.kcOnTapHold),
     tt: multiAction.tt,
   };
 }
@@ -100,7 +124,11 @@ export function applyKeymapToInputStore(store, deviceKeymap) {
     profiles: (targetRow.profiles ?? []).map((profile, index) => {
       const source = deviceKeymap.profiles?.[index];
       if (!source) return profile;
-      return { ...profile, name: source.name ?? profile.name, layers: source.layers };
+      return {
+        ...profile,
+        name: source.name ?? profile.name,
+        layers: source.layers.map(layerToAppFormat),
+      };
     }),
     actions,
     actionGroups: deviceKeymap.macrosGroups ?? [],
