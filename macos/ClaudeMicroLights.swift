@@ -101,9 +101,12 @@ func slotLighting(forStatuses statuses: [String?], colors: LightsColors) -> [Slo
     (0..<lightsSlotCount).map { index in
         let status = index < statuses.count ? statuses[index] : nil
         switch status {
-        case "unread":
+        // Green while a chat is doing work, amber once it is settled or wants
+        // the user, red when it failed. Breathing marks the states that are
+        // still changing, so a glance separates them from the steady ones.
+        case "running", "working":
             return SlotLighting(id: index, color: colors.pass, brightness: 1, effect: .breath, speed: 0.4)
-        case "running", "working", "awaiting approval", "awaiting response", "needs attention":
+        case "awaiting approval", "awaiting response", "needs attention", "unread":
             return SlotLighting(id: index, color: colors.active, brightness: 1, effect: .breath, speed: 0.4)
         case "idle":
             return SlotLighting(id: index, color: colors.active, brightness: 1, effect: .solid, speed: 0)
