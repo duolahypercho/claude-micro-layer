@@ -49,12 +49,25 @@ function toAppKeycode(keycode) {
 function layerToAppFormat(layer) {
   const layout = layer.layout ?? {};
   const mapRow = (row) => (row ?? []).map(toAppKeycode);
+  // A joystick sector binds a key through its `k` field, so it carries the same
+  // action reference as any other key and needs the same translation.
+  const mapJoystick = (joystick) =>
+    joystick
+      ? {
+          ...joystick,
+          sectors: (joystick.sectors ?? []).map((sector) => ({
+            ...sector,
+            k: toAppKeycode(sector.k),
+          })),
+        }
+      : joystick;
   return {
     ...layer,
     layout: {
       ...layout,
       keymap: (layout.keymap ?? []).map(mapRow),
       encoders: (layout.encoders ?? []).map(mapRow),
+      joystick: mapJoystick(layout.joystick),
     },
   };
 }

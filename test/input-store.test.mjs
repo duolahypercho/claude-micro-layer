@@ -121,14 +121,16 @@ test("device action and multiaction refs translate to Input's app format", () =>
   const device = deviceKeymap();
   device.profiles[0].layers[1].layout.encoders = [["KA_A5", "KC_MUTE"]];
   device.profiles[0].layers[1].layout.keymap = [["KA_M0", "KA_A3", "KV_OAI_AG00"]];
+  device.profiles[0].layers[1].layout.joystick = {
+    type: "RADIAL",
+    sectors: [{ angle: 0, k: "KA_A2" }],
+  };
   const row = applyKeymapToInputStore(fixtureStore(), device).collections[1]
     .data[0];
-  assert.deepEqual(row.profiles[0].layers[1].layout.keymap, [
-    ["KM_0", "KA_3", "KV_OAI_AG00"],
-  ]);
-  assert.deepEqual(row.profiles[0].layers[1].layout.encoders, [
-    ["KA_5", "KC_MUTE"],
-  ]);
+  const appLayer = row.profiles[0].layers[1].layout;
+  assert.deepEqual(appLayer.keymap, [["KM_0", "KA_3", "KV_OAI_AG00"]]);
+  assert.deepEqual(appLayer.encoders, [["KA_5", "KC_MUTE"]]);
+  assert.equal(appLayer.joystick.sectors[0].k, "KA_2", "sector keys translate too");
 });
 
 test("applying a keymap preserves fields the tool does not own", () => {
