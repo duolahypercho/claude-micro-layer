@@ -117,6 +117,26 @@ function mapLayerKeycodes(layer, mapper) {
   return mapped;
 }
 
+function validateLinkedApp(linkedApp, label) {
+  assert(
+    linkedApp && typeof linkedApp === "object",
+    `${label} must be an object`,
+  );
+  assert(
+    (typeof linkedApp.process === "string" && linkedApp.process.trim()) ||
+      (typeof linkedApp.path === "string" && linkedApp.path.trim()),
+    `${label} needs a process bundle id or an app path`,
+  );
+  for (const field of ["name", "process", "path"]) {
+    if (linkedApp[field] !== undefined) {
+      assert(
+        typeof linkedApp[field] === "string",
+        `${label}.${field} must be a string`,
+      );
+    }
+  }
+}
+
 function validateKeyInput(input, label) {
   assert(input && typeof input === "object", `${label} must be an object`);
   assert(
@@ -215,6 +235,9 @@ export function validateLayerPack(layerPack) {
     "Layer pack name is required",
   );
   validateLayer(layerPack.layer, "layerPack.layer");
+  if (layerPack.linkedApp !== undefined) {
+    validateLinkedApp(layerPack.linkedApp, "layerPack.linkedApp");
+  }
 
   const actionIds = validateActions(layerPack.actions ?? []);
   const multiActionIds = validateMultiActions(layerPack.multiActions ?? []);
@@ -503,6 +526,28 @@ function removeOrphanedPackAssets(keymap) {
   }
 }
 
+function ensureLinkedApp(keymap, linkedApp) {
+  const apps = keymap.linkedApps ?? [];
+  const existing = apps.find((app) =>
+    linkedApp.process?.trim()
+      ? app.process === linkedApp.process
+      : app.path === linkedApp.path,
+  );
+  if (existing) return existing.id;
+
+  const id = apps.reduce((max, app) => Math.max(max, app.id + 1), 0);
+  keymap.linkedApps = [
+    ...apps,
+    {
+      id,
+      name: linkedApp.name ?? "",
+      process: linkedApp.process ?? "",
+      path: linkedApp.path ?? "",
+    },
+  ];
+  return id;
+}
+
 export function applyLayerPack(
   keymap,
   layerPack,
@@ -531,9 +576,13 @@ export function applyLayerPack(
     ...installPackAssets(updatedKeymap, layerPack, targetProfile),
     id: targetIndex,
   };
-  // App links are configured per machine in Input, not carried by layer
-  // packs; keep an existing link when the layer is reinstalled.
-  if (existingLinkedAppId !== undefined) {
+  if (layerPack.linkedApp) {
+    targetProfile.layers[targetIndex].linkedAppId = ensureLinkedApp(
+      updatedKeymap,
+      layerPack.linkedApp,
+    );
+  } else if (existingLinkedAppId !== undefined) {
+    // Packs without a link keep whatever link the machine already had.
     targetProfile.layers[targetIndex].linkedAppId = existingLinkedAppId;
   }
 
@@ -695,6 +744,17 @@ export function createLayerPackFromKeymap(
   };
   const portableLayer = mapLayerKeycodes(layer, mapDeviceRef);
   delete portableLayer.id;
+  const linkedAppEntry = (keymap.linkedApps ?? []).find(
+    (app) => app.id === portableLayer.linkedAppId,
+  );
+  delete portableLayer.linkedAppId;
+  const linkedApp = linkedAppEntry
+    ? {
+        name: linkedAppEntry.name ?? "",
+        process: linkedAppEntry.process ?? "",
+        path: linkedAppEntry.path ?? "",
+      }
+    : undefined;
 
   const actions = [...actionIdMap].map(([deviceId, portableId]) => {
     const macro = macrosById.get(deviceId);
@@ -737,6 +797,7 @@ export function createLayerPackFromKeymap(
     device: "codex_micro",
     name: portableLayer.name,
     description: `Exported from Input profile ${profileId}, layer ${layerNumber}.`,
+    ...(linkedApp ? { linkedApp } : {}),
     layer: portableLayer,
     actions,
     multiActions,

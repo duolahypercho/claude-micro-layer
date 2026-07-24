@@ -25,6 +25,25 @@
       "type": "string",
       "pattern": "^#[0-9A-Fa-f]{6}$"
     },
+    "linkedApp": {
+      "type": "object",
+      "description": "App that Input auto-switches to this layer for; matched by process bundle id (preferred) or app path on install.",
+      "anyOf": [
+        { "required": ["process"] },
+        { "required": ["path"] }
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "process": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
     "actions": {
       "type": "array",
       "items": {

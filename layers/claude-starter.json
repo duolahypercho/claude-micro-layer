@@ -4,8 +4,67 @@
   "device": "codex_micro",
   "name": "Claude Desktop",
   "description": "Claude Desktop recent tasks, task controls, push-to-talk voice, and zoom controls for macOS.",
-  "author": "duolahypercho",
-  "actionGroupColor": "#D97757",
+  "linkedApp": {
+    "name": "Claude-mac",
+    "process": "com.anthropic.claudefordesktop",
+    "path": ""
+  },
+  "layer": {
+    "name": "Claude Desktop",
+    "color": 14251863,
+    "layout": {
+      "keymap": [
+        [
+          "KM_0",
+          "KA_1"
+        ],
+        [
+          "KA_2",
+          "KA_3",
+          "KA_4",
+          "KA_5"
+        ],
+        [
+          "KA_6",
+          "KA_7",
+          "KA_8",
+          "KA_9"
+        ],
+        [
+          "KC_F18",
+          "KC_F18",
+          "KA_13"
+        ]
+      ],
+      "encoders": [
+        [
+          "KA_10",
+          "KA_11",
+          "KA_12"
+        ]
+      ],
+      "joystick": {
+        "type": "RADIAL",
+        "sectors": []
+      }
+    },
+    "lights": {
+      "backlight": {
+        "effect": "solid",
+        "brightness": 1,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 14251863
+      },
+      "underglow": {
+        "effect": "solid",
+        "brightness": 0.7,
+        "speed": 0.5,
+        "magic": 1,
+        "color": 14251863
+      }
+    }
+  },
   "actions": [
     {
       "id": 0,
@@ -14,16 +73,6 @@
       "icon": "icon-message-fas",
       "keyInputs": [
         {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
           "keycode": "KC_LGUI",
           "delay": 0,
           "actionType": 1
@@ -31,20 +80,10 @@
         {
           "keycode": "KC_1",
           "delay": 0,
-          "actionType": 2
+          "actionType": 1
         },
         {
           "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
           "delay": 0,
           "actionType": 0
         }
@@ -56,16 +95,6 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
         {
           "keycode": "KC_LGUI",
           "delay": 0,
@@ -80,16 +109,6 @@
           "keycode": "KC_LGUI",
           "delay": 0,
           "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
@@ -99,16 +118,6 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
         {
           "keycode": "KC_LGUI",
           "delay": 0,
@@ -123,16 +132,6 @@
           "keycode": "KC_LGUI",
           "delay": 0,
           "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
@@ -142,16 +141,6 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
         {
           "keycode": "KC_LGUI",
           "delay": 0,
@@ -166,16 +155,6 @@
           "keycode": "KC_LGUI",
           "delay": 0,
           "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
@@ -185,16 +164,6 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
         {
           "keycode": "KC_LGUI",
           "delay": 0,
@@ -209,16 +178,6 @@
           "keycode": "KC_LGUI",
           "delay": 0,
           "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
@@ -228,16 +187,6 @@
       "color": null,
       "icon": "icon-message-fas",
       "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
         {
           "keycode": "KC_LGUI",
           "delay": 0,
@@ -250,16 +199,6 @@
         },
         {
           "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
           "delay": 0,
           "actionType": 0
         }
@@ -341,39 +280,54 @@
       "icon": "icon-arrows-turn-to-dots-fas",
       "keyInputs": [
         {
-          "keycode": "KC_LCTL",
+          "keycode": "KC_SLSH",
+          "delay": 0,
+          "actionType": 2
+        },
+        {
+          "keycode": "KC_F",
           "delay": 0,
           "actionType": 1
         },
         {
-          "keycode": "KC_LALT",
+          "keycode": "KC_O",
           "delay": 0,
           "actionType": 1
         },
         {
-          "keycode": "KC_LGUI",
+          "keycode": "KC_F",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_O",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_R",
           "delay": 0,
           "actionType": 1
         },
         {
           "keycode": "KC_K",
           "delay": 0,
+          "actionType": 1
+        },
+        {
+          "keycode": "KC_R",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_K",
+          "delay": 0,
+          "actionType": 0
+        },
+        {
+          "keycode": "KC_ENT",
+          "delay": 0,
           "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     },
@@ -555,61 +509,6 @@
       "tappingTerms": 250
     }
   ],
-  "layer": {
-    "name": "Claude Desktop",
-    "color": 14251863,
-    "layout": {
-      "keymap": [
-        [
-          "KM_0",
-          "KA_1"
-        ],
-        [
-          "KA_2",
-          "KA_3",
-          "KA_4",
-          "KA_5"
-        ],
-        [
-          "KA_6",
-          "KA_7",
-          "KA_8",
-          "KA_9"
-        ],
-        [
-          "KC_F18",
-          "KC_F18",
-          "KA_13"
-        ]
-      ],
-      "encoders": [
-        [
-          "KA_10",
-          "KA_11",
-          "KA_12"
-        ]
-      ],
-      "joystick": {
-        "type": "RADIAL",
-        "sectors": []
-      }
-    },
-    "lights": {
-      "backlight": {
-        "effect": "solid",
-        "brightness": 1,
-        "speed": 0.5,
-        "magic": 1,
-        "color": 14251863
-      },
-      "underglow": {
-        "effect": "solid",
-        "brightness": 0.7,
-        "speed": 0.5,
-        "magic": 1,
-        "color": 14251863
-      }
-    },
-    "linkedAppId": 0
-  }
+  "author": "duolahypercho",
+  "actionGroupColor": "#D97757"
 }

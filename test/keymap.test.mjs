@@ -93,15 +93,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    [
-      "KC_LCTL",
-      "KC_LALT",
-      "KC_LGUI",
-      "KC_1",
-      "KC_LGUI",
-      "KC_LALT",
-      "KC_LCTL",
-    ],
+    ["KC_LGUI", "KC_1", "KC_LGUI"],
   );
   assert.deepEqual(
     updated.macros.slice(0, 10).map((macro) => macro.name),
@@ -246,15 +238,7 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    [
-      "KC_LCTL",
-      "KC_LALT",
-      "KC_LGUI",
-      "KC_1",
-      "KC_LGUI",
-      "KC_LALT",
-      "KC_LCTL",
-    ],
+    ["KC_LGUI", "KC_1", "KC_LGUI"],
   );
   assert.equal(exported.multiActions.length, 1);
   assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
@@ -292,14 +276,39 @@ test("hardware sync accepts only the exact device checksum", () => {
   );
 });
 
-test("reinstalling a layer keeps its Input app link", async () => {
-  const keymap = fixtureKeymap();
+test("a pack's app link installs into the keymap and stays stable", async () => {
   const layerPack = await loadJson(exampleLayerPath);
-  const first = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
-  first.linkedApps = [{ id: 3, name: "Claude", path: "/Applications/Claude.app" }];
+
+  const first = applyLayerPack(fixtureKeymap(), layerPack, { layerNumber: 2 });
+  assert.equal(first.linkedApps.length, 1);
+  assert.equal(first.linkedApps[0].process, layerPack.linkedApp.process);
+  assert.equal(
+    first.profiles[0].layers[1].linkedAppId,
+    first.linkedApps[0].id,
+  );
+
+  const again = applyLayerPack(first, layerPack, { layerNumber: 2 });
+  assert.deepEqual(again.linkedApps, first.linkedApps);
+  assert.equal(
+    again.profiles[0].layers[1].linkedAppId,
+    first.linkedApps[0].id,
+  );
+});
+
+test("reinstalling a link-free pack keeps the machine's app link", async () => {
+  const layerPack = await loadJson(exampleLayerPath);
+  const linkFreePack = structuredClone(layerPack);
+  delete linkFreePack.linkedApp;
+
+  const first = applyLayerPack(fixtureKeymap(), linkFreePack, {
+    layerNumber: 2,
+  });
+  first.linkedApps = [
+    { id: 3, name: "Claude", path: "/Applications/Claude.app" },
+  ];
   first.profiles[0].layers[1].linkedAppId = 3;
 
-  const updated = applyLayerPack(first, layerPack, { layerNumber: 2 });
+  const updated = applyLayerPack(first, linkFreePack, { layerNumber: 2 });
 
   assert.equal(updated.profiles[0].layers[1].linkedAppId, 3);
   assert.deepEqual(updated.linkedApps, first.linkedApps);
