@@ -295,6 +295,25 @@ test("a pack's app link installs into the keymap and stays stable", async () => 
   );
 });
 
+test("reinstalling refreshes a stale app link's name and path", async () => {
+  const layerPack = await loadJson(exampleLayerPath);
+
+  const first = applyLayerPack(fixtureKeymap(), layerPack, { layerNumber: 2 });
+  first.linkedApps = [
+    { id: first.linkedApps[0].id, name: "Old", process: layerPack.linkedApp.process, path: "" },
+  ];
+
+  const updated = applyLayerPack(first, layerPack, { layerNumber: 2 });
+
+  assert.equal(updated.linkedApps.length, 1);
+  assert.equal(updated.linkedApps[0].name, layerPack.linkedApp.name);
+  assert.equal(updated.linkedApps[0].path, layerPack.linkedApp.path);
+  assert.equal(
+    updated.profiles[0].layers[1].linkedAppId,
+    updated.linkedApps[0].id,
+  );
+});
+
 test("reinstalling a link-free pack keeps the machine's app link", async () => {
   const layerPack = await loadJson(exampleLayerPath);
   const linkFreePack = structuredClone(layerPack);

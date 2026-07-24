@@ -5,9 +5,9 @@
   "name": "Claude Desktop",
   "description": "Claude Desktop recent tasks, task controls, push-to-talk voice, and zoom controls for macOS.",
   "linkedApp": {
-    "name": "Claude-mac",
+    "name": "Claude",
     "process": "com.anthropic.claudefordesktop",
-    "path": ""
+    "path": "/Applications/Claude.app"
   },
   "layer": {
     "name": "Claude Desktop",

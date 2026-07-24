@@ -533,7 +533,19 @@ function ensureLinkedApp(keymap, linkedApp) {
       ? app.process === linkedApp.process
       : app.path === linkedApp.path,
   );
-  if (existing) return existing.id;
+  if (existing) {
+    keymap.linkedApps = apps.map((app) =>
+      app.id === existing.id
+        ? {
+            ...app,
+            name: linkedApp.name ?? app.name,
+            process: linkedApp.process ?? app.process,
+            path: linkedApp.path ?? app.path,
+          }
+        : app,
+    );
+    return existing.id;
+  }
 
   const id = apps.reduce((max, app) => Math.max(max, app.id + 1), 0);
   keymap.linkedApps = [
