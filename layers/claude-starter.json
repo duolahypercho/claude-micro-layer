@@ -448,92 +448,6 @@
     },
     {
       "id": 13,
-      "name": "Voice Input Left",
-      "color": null,
-      "icon": "icon-microphone-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_V",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 14,
-      "name": "Voice Input Right",
-      "color": null,
-      "icon": "icon-microphone-fas",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_V",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
-        }
-      ]
-    },
-    {
-      "id": 15,
       "name": "Send Message",
       "color": null,
       "icon": "icon-paper-plane-fas",
@@ -546,7 +460,7 @@
       ]
     },
     {
-      "id": 16,
+      "id": 14,
       "name": "Focus Claude",
       "color": null,
       "icon": "icon-window-restore-fas",
@@ -606,7 +520,7 @@
         "actionType": 1
       },
       "doubleTap": {
-        "keycode": "KA_16",
+        "keycode": "KA_14",
         "delay": 0,
         "actionType": 1
       },
@@ -640,9 +554,9 @@
           "KA_9"
         ],
         [
-          "KA_13",
-          "KA_14",
-          "KA_15"
+          "KC_F18",
+          "KC_F18",
+          "KA_13"
         ]
       ],
       "encoders": [

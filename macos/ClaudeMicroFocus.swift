@@ -26,6 +26,10 @@ private enum ClaudeCommand: UInt32 {
 private struct HotKeyBinding {
     let command: ClaudeCommand
     let keyCode: UInt32
+    // Most controls use the private Control-Option-Command prefix. Voice is the
+    // exception: it needs a bare key so the firmware holds it for as long as the
+    // physical key is down, which is what makes push-to-talk possible.
+    var modifiers: UInt32 = hotKeyModifiers
 }
 
 private let hotKeyBindings = [
@@ -40,7 +44,7 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .confirm, keyCode: UInt32(kVK_ANSI_Y)),
     HotKeyBinding(command: .cancel, keyCode: UInt32(kVK_ANSI_X)),
     HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
-    HotKeyBinding(command: .voice, keyCode: UInt32(kVK_ANSI_V)),
+    HotKeyBinding(command: .voice, keyCode: UInt32(kVK_F18), modifiers: 0),
     HotKeyBinding(command: .send, keyCode: UInt32(kVK_Return)),
 ]
 
@@ -591,7 +595,7 @@ enum ClaudeMicroFocusApp {
             let id = EventHotKeyID(signature: hotKeySignature, id: binding.command.rawValue)
             let status = RegisterEventHotKey(
                 binding.keyCode,
-                hotKeyModifiers,
+                binding.modifiers,
                 id,
                 GetApplicationEventTarget(),
                 0,

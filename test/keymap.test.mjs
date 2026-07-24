@@ -80,11 +80,11 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
     "KA_A1",
   ]);
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[3], [
+    "KC_F18",
+    "KC_F18",
     "KA_A13",
-    "KA_A14",
-    "KA_A15",
-  ]);
-  assert.equal(updated.macros.length, 17);
+  ], "voice keys are a held keycode, not a macro");
+  assert.equal(updated.macros.length, 15);
   assert.equal(updated.macros[0].name, "Recent Task 1");
   assert.equal(updated.macros[0].icon, "icon-message-fas");
   assert.equal(
@@ -118,24 +118,18 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
       "Fork Current Task",
     ],
   );
-  assert.deepEqual(
-    updated.macros.slice(13, 16).map((macro) => macro.name),
-    ["Voice Input Left", "Voice Input Right", "Send Message"],
-  );
-  assert.deepEqual(
-    updated.macros
-      .slice(13, 16)
-      .map((macro) => macro.actions.find((input) => input.act === 2).kc),
-    ["KC_V", "KC_V", "KC_ENT"],
-    "voice is push-to-talk through the helper; send uses KC_ENT",
+  assert.equal(updated.macros[13].name, "Send Message");
+  assert.equal(
+    updated.macros[13].actions.find((input) => input.act === 2).kc,
+    "KC_ENT",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 17 }, (_, index) => index),
+    Array.from({ length: 15 }, (_, index) => index),
   );
   assert.equal(updated.multiActions.length, 1);
   assert.equal(updated.multiActions[0].kcOnTap, "KA_A0");
-  assert.equal(updated.multiActions[0].kcOnDoubleTap, "KA_A16");
+  assert.equal(updated.multiActions[0].kcOnDoubleTap, "KA_A14");
   assert.equal(updated.multiActions[0].tt, 250);
   assert.deepEqual(updated.profiles[0].multiActionsUsed, [0]);
   assert.equal(
@@ -167,7 +161,7 @@ test("installing actions allocates IDs after existing Input macros", async () =>
   assert.equal(updated.macros[1].id, 6);
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 18 }, (_, index) => index + 5),
+    Array.from({ length: 16 }, (_, index) => index + 5),
   );
 });
 
@@ -228,7 +222,7 @@ test("install creates a backup and writes valid JSON", async () => {
   const backup = JSON.parse(await readFile(result.backupPath, "utf8"));
 
   assert.equal(installed.profiles[0].layers[1].name, "Claude Desktop");
-  assert.equal(installed.macros.length, 17);
+  assert.equal(installed.macros.length, 15);
   assert.equal(installed.multiActions.length, 1);
   assert.equal(backup.profiles[0].layers.length, 1);
   assert.equal(backup.macros.length, 0);
@@ -246,7 +240,7 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.layer.name, "Claude Desktop");
   assert.equal("id" in exported.layer, false);
   assert.deepEqual(exported.layer.layout.keymap[0], ["KM_0", "KA_1"]);
-  assert.equal(exported.actions.length, 17);
+  assert.equal(exported.actions.length, 15);
   assert.equal(exported.actions[0].name, "Recent Task 1");
   assert.equal(exported.actions[0].icon, "icon-message-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
@@ -264,7 +258,7 @@ test("an installed layer exports as a portable pack", async () => {
   );
   assert.equal(exported.multiActions.length, 1);
   assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
-  assert.equal(exported.multiActions[0].doubleTap.keycode, "KA_16");
+  assert.equal(exported.multiActions[0].doubleTap.keycode, "KA_14");
   assert.equal(exported.multiActions[0].tappingTerms, 250);
 });
 
@@ -326,7 +320,7 @@ test("reinstalling a pack does not accumulate duplicate actions", async () => {
   keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
   const packMacros = keymap.macros.filter((m) => m.name !== "User macro");
-  assert.equal(packMacros.length, 17, "old pack generations must be removed");
+  assert.equal(packMacros.length, 15, "old pack generations must be removed");
   assert.equal(
     keymap.macros.some((m) => m.name === "User macro"),
     true,
@@ -336,5 +330,5 @@ test("reinstalling a pack does not accumulate duplicate actions", async () => {
   assert.equal(keymap.macrosGroups.length, 1);
   assert.equal(keymap.multiActionsGroups.length, 1);
   const names = new Set(packMacros.map((m) => m.name));
-  assert.equal(names.size, 17, "no duplicate action names");
+  assert.equal(names.size, 15, "no duplicate action names");
 });
