@@ -190,9 +190,9 @@ final class MicroHIDClient {
     private var receivedReportCount = 0
     private var lastReportPrefix = "none"
 
-    /// Called with the key code ("AG00"..."AG05") when the keyboard's Layer 1
-    /// task keys emit a vendor HID notification.
-    var onTaskKeyEvent: ((String) -> Void)?
+    /// Called with the key code ("AG00"..."AG05") and the edge (1 press,
+    /// 0 release) when a task key emits a vendor HID notification.
+    var onTaskKeyEvent: ((String, Int) -> Void)?
 
     var isDeviceAttached: Bool { device != nil }
 
@@ -326,12 +326,10 @@ final class MicroHIDClient {
             let params = (root["params"] as? [String: Any])
                 ?? (root["p"] as? [String: Any])
             // The device reports both edges of a task key: act 1 is the press,
-            // act 0 the release. Acting on either one fires twice per press, or
-            // once on release when the press lands inside the debounce window.
+            // act 0 the release. Both are forwarded so a hold can be timed.
             let action = (params?["act"] as? NSNumber)?.intValue
-            if let key = (params?["k"] as? String) ?? (params?["key"] as? String),
-                action == nil || action == 1 {
-                onTaskKeyEvent?(key)
+            if let key = (params?["k"] as? String) ?? (params?["key"] as? String) {
+                onTaskKeyEvent?(key, action ?? 1)
             }
             return
         }
@@ -431,12 +429,14 @@ final class LightsEngine {
     private var requestInFlight = false
     private var lastLayerCheck = Date.distantPast
     private static let layerRecheckInterval: TimeInterval = 15
+    private static let holdThreshold: TimeInterval = 0.4
     private var lastTaskKeyEvent = Date.distantPast
 
     /// Called with the slot index (0-5) when a Layer 1 task key is pressed on
     /// the keyboard. Events are debounced because the device can report both
     /// press and release.
-    var onTaskKeyPressed: ((Int) -> Void)?
+    /// Called on release with the slot and whether the key was held.
+    var onTaskKeyPressed: ((Int, Bool) -> Void)?
 
     /// statusProvider returns one normalized status word per task slot, or nil
     /// when Claude is not running or accessibility access is unavailable.
@@ -485,7 +485,7 @@ final class LightsEngine {
         // appears in the Input Monitoring list for the user to enable.
         if client == nil {
             let client = MicroHIDClient()
-            client.onTaskKeyEvent = { [weak self] key in
+            client.onTaskKeyEvent = { [weak self] key, action in
                 guard let self else { return }
                 guard
                     key.count == 4,
@@ -493,12 +493,16 @@ final class LightsEngine {
                     let slot = Int(key.suffix(1)),
                     (0..<lightsSlotCount).contains(slot)
                 else { return }
-                // No time-based debounce: the parser already drops the release
-                // edge, so every event here is a real press. A window wide
-                // enough to cover a key's two edges also swallowed the second
-                // of two task keys pressed in quick succession.
-                self.lastTaskKeyEvent = Date()
-                self.onTaskKeyPressed?(slot)
+                // Acting on the release lets a hold be measured. There is no
+                // time-based debounce: the two edges are already distinct, and
+                // a window wide enough to cover them swallowed the second of
+                // two task keys pressed in quick succession.
+                if action == 1 {
+                    self.lastTaskKeyEvent = Date()
+                    return
+                }
+                let held = Date().timeIntervalSince(self.lastTaskKeyEvent)
+                self.onTaskKeyPressed?(slot, held >= Self.holdThreshold)
             }
             self.client = client
         }

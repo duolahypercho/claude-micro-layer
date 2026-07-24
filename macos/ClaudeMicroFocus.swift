@@ -576,8 +576,15 @@ enum ClaudeMicroFocusApp {
         let recentCommands: [ClaudeCommand] = [
             .recent1, .recent2, .recent3, .recent4, .recent5, .recent6,
         ]
-        lightsEngine.onTaskKeyPressed = { slot in
+        // Holding the first task key starts a new chat. The firmware owns those
+        // keys, so the keyboard cannot carry a hold gesture itself, but it
+        // reports both edges and the hold can be timed here instead.
+        lightsEngine.onTaskKeyPressed = { slot, held in
             guard recentCommands.indices.contains(slot) else { return }
+            if held, slot == 0 {
+                handleClaudeCommand(.newChat)
+                return
+            }
             handleClaudeCommand(recentCommands[slot])
         }
         lightsEngine.start()

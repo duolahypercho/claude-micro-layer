@@ -81,10 +81,10 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   ], "task keys stay vendor agent keys so the firmware lights them");
   assert.deepEqual(updated.profiles[0].layers[1].layout.keymap[3], [
     "KC_F18",
-    "KA_A8",
+    "KC_F18",
     "KA_A7",
-  ], "the voice key is a held keycode, not a macro");
-  assert.equal(updated.macros.length, 9);
+  ], "the voice keys are a held keycode, not a macro");
+  assert.equal(updated.macros.length, 8);
   assert.equal(updated.macros[0].name, "Fast Mode");
   assert.equal(updated.macros[0].icon, "icon-bolt-lightning-fas");
   assert.equal(
@@ -106,12 +106,11 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
       "Zoom In",
       "Actual Size",
       "Send Message",
-      "New Chat",
     ],
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 9 }, (_, index) => index),
+    Array.from({ length: 8 }, (_, index) => index),
   );
   assert.equal(
     keymap.profiles[0].layers.length,
@@ -138,12 +137,12 @@ test("installing actions reuses the lowest free macro IDs", async () => {
   assert.equal(updated.macros[1].id, 0, "installs fill the gap below id 5");
   assert.equal(
     Math.max(...updated.macros.map((macro) => macro.id)),
-    9,
+    8,
     "IDs stay in the firmware's low slot range",
   );
   assert.deepEqual(
     updated.profiles[0].macrosUsed,
-    Array.from({ length: 10 }, (_, index) => index),
+    Array.from({ length: 9 }, (_, index) => index),
   );
 });
 
@@ -240,7 +239,7 @@ test("install creates a backup and writes valid JSON", async () => {
   const backup = JSON.parse(await readFile(result.backupPath, "utf8"));
 
   assert.equal(installed.profiles[0].layers[1].name, "Claude Desktop");
-  assert.equal(installed.macros.length, 9);
+  assert.equal(installed.macros.length, 8);
   assert.equal(backup.profiles[0].layers.length, 1);
   assert.equal(backup.macros.length, 0);
 });
@@ -260,7 +259,7 @@ test("an installed layer exports as a portable pack", async () => {
     "KV_OAI_AG00",
     "KV_OAI_AG01",
   ]);
-  assert.equal(exported.actions.length, 9);
+  assert.equal(exported.actions.length, 8);
   assert.equal(exported.actions[0].name, "Fast Mode");
   assert.equal(exported.actions[0].icon, "icon-bolt-lightning-fas");
   assert.equal(exported.actions.every((action) => action.icon), true);
@@ -374,7 +373,7 @@ test("reinstalling a pack does not accumulate duplicate actions", async () => {
   keymap = applyLayerPack(keymap, layerPack, { layerNumber: 2 });
 
   const packMacros = keymap.macros.filter((m) => m.name !== "User macro");
-  assert.equal(packMacros.length, 9, "old pack generations must be removed");
+  assert.equal(packMacros.length, 8, "old pack generations must be removed");
   assert.equal(
     keymap.macros.some((m) => m.name === "User macro"),
     true,
@@ -382,5 +381,5 @@ test("reinstalling a pack does not accumulate duplicate actions", async () => {
   );
   assert.equal(keymap.macrosGroups.length, 1);
   const names = new Set(packMacros.map((m) => m.name));
-  assert.equal(names.size, 9, "no duplicate action names");
+  assert.equal(names.size, 8, "no duplicate action names");
 });

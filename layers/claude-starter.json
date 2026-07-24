@@ -32,7 +32,7 @@
         ],
         [
           "KC_F18",
-          "KA_15",
+          "KC_F18",
           "KA_13"
         ]
       ],
@@ -84,7 +84,7 @@
         },
         {
           "keycode": "KC_ENT",
-          "delay": 0,
+          "delay": 250,
           "actionType": 2
         }
       ]
@@ -208,7 +208,7 @@
         },
         {
           "keycode": "KC_ENT",
-          "delay": 0,
+          "delay": 250,
           "actionType": 2
         }
       ]
@@ -352,49 +352,6 @@
           "keycode": "KC_ENT",
           "delay": 0,
           "actionType": 2
-        }
-      ]
-    },
-    {
-      "id": 15,
-      "name": "New Chat",
-      "color": null,
-      "icon": "icon-square-plus-far",
-      "keyInputs": [
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 1
-        },
-        {
-          "keycode": "KC_N",
-          "delay": 0,
-          "actionType": 2
-        },
-        {
-          "keycode": "KC_LGUI",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LALT",
-          "delay": 0,
-          "actionType": 0
-        },
-        {
-          "keycode": "KC_LCTL",
-          "delay": 0,
-          "actionType": 0
         }
       ]
     }
