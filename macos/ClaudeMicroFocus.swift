@@ -21,6 +21,10 @@ private enum ClaudeCommand: UInt32 {
     case fork
     case voice
     case send
+    case zoomOut
+    case zoomIn
+    case actualSize
+    case newChat
 }
 
 private struct HotKeyBinding {
@@ -46,6 +50,10 @@ private let hotKeyBindings = [
     HotKeyBinding(command: .fork, keyCode: UInt32(kVK_ANSI_K)),
     HotKeyBinding(command: .voice, keyCode: UInt32(kVK_F18), modifiers: 0),
     HotKeyBinding(command: .send, keyCode: UInt32(kVK_Return)),
+    HotKeyBinding(command: .zoomOut, keyCode: UInt32(kVK_ANSI_Minus)),
+    HotKeyBinding(command: .zoomIn, keyCode: UInt32(kVK_ANSI_Equal)),
+    HotKeyBinding(command: .actualSize, keyCode: UInt32(kVK_ANSI_0)),
+    HotKeyBinding(command: .newChat, keyCode: UInt32(kVK_ANSI_N)),
 ]
 
 private var registeredHotKeys: [EventHotKeyRef] = []
@@ -469,6 +477,14 @@ private func handleClaudeCommand(_ command: ClaudeCommand) {
             activateVoiceControl(in: application)
         case .send:
             sendMessage(in: application)
+        case .zoomOut:
+            sendKey(CGKeyCode(kVK_ANSI_Minus), flags: .maskCommand, to: application)
+        case .zoomIn:
+            sendKey(CGKeyCode(kVK_ANSI_Equal), flags: .maskCommand, to: application)
+        case .actualSize:
+            sendKey(CGKeyCode(kVK_ANSI_0), flags: .maskCommand, to: application)
+        case .newChat:
+            sendKey(CGKeyCode(kVK_ANSI_N), flags: .maskCommand, to: application)
         }
     }
 }

@@ -93,7 +93,7 @@ test("installing Layer 2 preserves the protected Codex layer", async () => {
   );
   assert.deepEqual(
     updated.macros[0].actions.map((input) => input.kc),
-    ["KC_LGUI", "KC_1", "KC_LGUI"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
   assert.deepEqual(
     updated.macros.slice(0, 10).map((macro) => macro.name),
@@ -238,7 +238,7 @@ test("an installed layer exports as a portable pack", async () => {
   assert.equal(exported.actions.every((action) => action.icon), true);
   assert.deepEqual(
     exported.actions[0].keyInputs.map((input) => input.keycode),
-    ["KC_LGUI", "KC_1", "KC_LGUI"],
+    ["KC_LCTL", "KC_LALT", "KC_LGUI", "KC_1", "KC_LGUI", "KC_LALT", "KC_LCTL"],
   );
   assert.equal(exported.multiActions.length, 1);
   assert.equal(exported.multiActions[0].tap.keycode, "KA_0");
