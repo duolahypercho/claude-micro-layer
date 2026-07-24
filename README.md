@@ -103,16 +103,18 @@ editing, while the keyboard preview uses the icons.
 
 | Control group       | Mapping                          |
 | ------------------- | -------------------------------- |
-| First six keys      | Claude recent tasks 1–6          |
-| Second four-key row | Fast mode, Confirm, Cancel, Fork |
+| First six keys      | Claude recent chats 1–6          |
+| Second four-key row | Btw, Confirm, Cancel, Fork       |
 | Bottom three keys   | Voice input, Voice input, Send   |
 | Dial                | Zoom out, zoom in, actual size   |
 
-The first six keys select the first six tasks shown in Claude's **Recents**
-list. The top-left key is a native Input multiaction: a single tap selects
-recent task 1; a double tap within 250 ms sends a private global shortcut to
-the included macOS helper, which brings Claude to the front or launches it.
-All single-tap task controls work while Claude remains in the background.
+The first six keys are the firmware's own agent keys, which is what lets them
+carry chat status colors; the helper listens for their presses and opens the
+matching chat. Holding the top-left key for 400 ms starts a new chat instead.
+
+Switching a chat brings Claude forward, because Claude does that with its own
+Command-digit shortcut and a background app ignores menu shortcuts. The other
+controls reach Claude while it stays behind another window.
 
 The helper uses macOS Accessibility to press Claude's visible controls. The
 first task-control press may show a macOS permission prompt. Grant the installed
@@ -130,18 +132,17 @@ node ./bin/claude-micro-layer.mjs lights on
 
 | Chat status                  | Key light         |
 | ---------------------------- | ----------------- |
-| Finished, result unread      | Green, blinking   |
-| Working or awaiting approval | Orange, blinking  |
-| Idle                         | Orange, steady    |
+| Working                      | Green, blinking   |
+| Waiting on you               | Orange, blinking  |
+| Finished, result unread      | Red, steady       |
 | Error                        | Red, blinking     |
-| Empty slot                   | Off               |
+| Idle or empty slot           | Off               |
 
 Status lights are volatile device state sent over the keyboard's vendor
 RPC channel; the keymap file and the protected Codex Layer 1 configuration
-are never written. The firmware renders the per-key task lights only while
-**Layer 1** is selected, so Layer 1 doubles as the ambient Claude status
-board: the helper also listens to Layer 1's own task-key events and selects
-the matching recent chat, with Claude in the background. Lights are cleared
+are never written. The firmware renders these lights onto its own agent keys,
+which is why the layer maps the first six keys to them: a macro key gives the
+firmware nothing to color. Lights are cleared
 when lighting is disabled or the helper exits, and turned off when Claude is
 not running. The first time lights are enabled, macOS asks once for **Input
 Monitoring** access for `claude-micro-focus`.

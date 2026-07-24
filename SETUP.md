@@ -65,9 +65,9 @@ node ./bin/claude-micro-layer.mjs focus-helper install
 This compiles a small native helper, installs it in your user Application
 Support directory, and starts it automatically at login. It listens only for
 the private `Control-Option-Command` shortcuts emitted by this Layer 2 pack.
-The helper selects recent Claude tasks and presses the requested Claude control
-without bringing Claude forward. The top-left double tap is the exception: it
-brings the existing Claude window to the front or launches Claude if closed.
+The helper drives the requested Claude control without bringing Claude
+forward. Switching chats is the exception: Claude does that with its own
+Command-digit shortcut, which it ignores unless it is frontmost.
 
 The helper uses macOS Accessibility to find Claude's visible controls. The
 first time you use a task key, macOS may ask for access. Open **System Settings
@@ -161,22 +161,24 @@ is that the command reports a verified checksum and exits successfully.
 2. Open the **Keymap** tab.
 3. Select the circle labelled **2** under Layers.
 4. Confirm that the layer name is **Claude Desktop**.
-5. Confirm that SVG icons appear on all keys and dial controls. Hover over or
-   select an icon to see action names such as **Recent Task 1**, **Toggle Fast
-   Mode**, **Confirm Current Request**, and **Voice Input**.
+5. The first six keys show the firmware's own agent keys — they are drawn by
+   the keyboard, not by this pack, which is what lets them carry chat status
+   colors. The remaining keys show SVG icons; hover over or select one to see
+   action names such as **Btw**, **Confirm Current Request**, and
+   **Send Message**.
 
 ## 10. Test the Claude controls
 
 Select Layer 2 in Input and test one control at a time. Claude can remain behind
 another app:
 
-1. Press one of the first six keys and verify Claude selects the matching task
-   in its **Recents** list without coming forward.
-2. Use **Fast mode** to switch Claude's effort control to its fastest setting;
-   press it again to restore the previous effort.
+1. Press one of the first six keys and verify Claude opens the matching chat
+   from its sidebar. Claude comes forward: it switches chats with its own
+   Command-digit shortcut, which a background app ignores.
+2. Press **Btw** to send `/btw` in the current chat.
 3. Test **Confirm** only when Claude is visibly asking for confirmation.
 4. Test **Cancel** while a response is running.
-5. Test **Fork** on a response you are comfortable forking.
+5. Test **Fork** on a response you are comfortable forking; it sends `/fork`.
 6. Press either half of the double-width voice key to toggle voice input.
 7. Use **Send** only after entering a test prompt.
 8. Turn the dial one step in each direction to test zoom, then press it to
@@ -187,10 +189,11 @@ conversation where those actions are safe.
 
 The top-left key has two gestures:
 
-- Single tap: select recent task 1 in the background
-- Double tap within 250 ms: bring Claude to the front
+- Tap: open recent chat 1
+- Hold for 400 ms: start a new chat
 
-The single-tap action waits briefly for the 250 ms double-tap window to expire.
+The firmware owns that key, so the gesture is not in the keymap: the keyboard
+reports both edges of the press and the helper times the hold.
 
 ### Status colors
 
@@ -203,17 +206,17 @@ node ./bin/claude-micro-layer.mjs lights on
 
 The first time, macOS asks for **Input Monitoring** access. Open **System
 Settings → Privacy & Security → Input Monitoring** and enable
-`claude-micro-focus`. Colors follow the chat status: green blinking when a
-finished result is waiting, orange blinking while working or awaiting
-approval, orange steady when idle, red blinking on error.
+`claude-micro-focus`. Colors follow the chat status: green blinking while a
+chat works, orange blinking when it is waiting on you, red steady once a
+finished result is unread, red blinking on error, and dark when idle.
 
 The lights are sent over the keyboard's vendor RPC channel and are never
 written to the keymap, so the protected Codex Layer 1 configuration is
-untouched. The firmware draws the per-key task lights only while **Layer 1**
-is selected — Layer 1 is the Claude status board. While Layer 1 is active,
-pressing a task key also selects that recent chat: the helper receives
-Layer 1's own key events and drives Claude in the background, so Claude
-never needs to come forward. The helper clears the lights when you run
+untouched. The firmware draws the per-key task lights onto its own agent
+keys, which is why this pack maps the first six keys to them rather than to
+macros: a macro key gives the firmware nothing to color. Pressing one still
+reaches Claude — the keyboard reports the press over its vendor channel and
+the helper acts on it. The helper clears the lights when you run
 `lights off`, when Claude quits, or when the helper stops. Do not run the
 lights while the Codex app is actively driving the keyboard — the firmware
 has one shared set of six task lights and the two writers would overwrite
@@ -221,7 +224,7 @@ each other.
 
 Colors and polling can be customized in
 `~/Library/Application Support/ClaudeMicroLayer/lights.json`
-(`colors.pass`, `colors.active`, `colors.error` as `#RRGGBB`,
+(`colors.pass`, `colors.active`, `colors.done` as `#RRGGBB`,
 `pollIntervalMs`, `rpcTimeoutMs`, and `claudeLayerIndex`, zero-based, `-1` to
 disable layer gating). Check the current settings with
 `node ./bin/claude-micro-layer.mjs lights status`.
@@ -311,17 +314,17 @@ node ./bin/claude-micro-layer.mjs sync \
   --input-app "/full/path/to/input.app"
 ```
 
-### Double tap does not bring Claude forward
+### Holding the top-left key does not start a new chat
 
-First press `Control-Option-Command-C` on the Mac keyboard. If Claude does not
-come forward, reinstall and restart the helper:
+First press `Control-Option-Command-N` on the Mac keyboard. If no new chat
+opens, reinstall and restart the helper:
 
 ```sh
 node ./bin/claude-micro-layer.mjs focus-helper install
 ```
 
-If the keyboard shortcut works but the double tap does not, reinstall the layer,
-sync it again, and make sure both taps occur within 250 ms.
+If the keyboard shortcut works but the hold does not, hold the key longer: the
+helper treats anything under 400 ms as a tap.
 
 ### Task controls or lights stop working after reinstalling the helper
 
